@@ -1,6 +1,6 @@
 name: aud_audio_auv3
 description: "Audio Unit v3 extension of the Audanika Audio Engine over its headless host"
-version: 0.0.1
+version: 0.0.2
 publish_to: none
 homepage: https://github.com/audaudio/aud_audio_auv3
 repository: https://github.com/audaudio/aud_audio_auv3
