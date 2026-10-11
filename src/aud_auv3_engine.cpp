@@ -10,8 +10,8 @@
 #include <mach/mach_time.h>
 
 #include <algorithm>
-#include <cmath>
 #include <atomic>
+#include <cmath>
 #include <condition_variable>
 #include <cstring>
 #include <deque>
@@ -23,6 +23,13 @@
 
 #include "aud_audio_graph.h"
 #include "aud_spsc_queue.hpp"
+
+// The header repeats these flags for the extension, which does not include
+// aud_audio_core.
+static_assert(AUD_AUV3_PARAM_STEPPED == AUD_PARAM_STEPPED,
+              "AUD_AUV3_PARAM_STEPPED differs from AUD_PARAM_STEPPED");
+static_assert(AUD_AUV3_PARAM_LOGARITHMIC == AUD_PARAM_LOGARITHMIC,
+              "AUD_AUV3_PARAM_LOGARITHMIC differs from AUD_PARAM_LOGARITHMIC");
 
 namespace {
 
@@ -286,6 +293,10 @@ int aud_auv3_engine_param(const AudAuv3Engine* engine, uint32_t index,
   }
   *out = engine->params[index].info;
   return 1;
+}
+
+uint32_t aud_auv3_engine_param_id(const char* nodeId, const char* paramId) {
+  return aud_host_param_id(nodeId, paramId);
 }
 
 int aud_auv3_engine_prepare(AudAuv3Engine* engine, double sampleRate,

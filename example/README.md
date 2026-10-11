@@ -1,17 +1,7 @@
 # aud_audio_auv3_example
 
-Demonstrates how to use the aud_audio_auv3 package.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+The container app of the aud_audio_auv3 spike (ticket 24) and its AUv3
+extension `AudSpikeAU`: the app loads one to four instances out of
+process, opens their Flutter editors and reports the extension's
+footprint and the first frames. The README of the repo describes how to
+build and run it.

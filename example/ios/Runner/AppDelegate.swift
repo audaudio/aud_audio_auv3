@@ -124,8 +124,10 @@ final class AudSpikeHost {
     for index in 0..<count {
       AVAudioUnit.instantiate(with: description, options: [.loadOutOfProcess]) { unit, error in
         DispatchQueue.main.async {
+          // A unit that fails to load ends the run, which waits for all of them.
           guard let unit = unit else {
             self.report(["kind": "error", "message": "instantiate: \(String(describing: error))"])
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { exit(1) }
             return
           }
           self.engine.attach(unit)
@@ -204,11 +206,11 @@ final class AudSpikeHost {
   }
 
   private func sample(_ label: String) {
-    let footprint = units.first?.auAudioUnit.parameterTree?
-      .parameter(withAddress: AudSpikeHost.footprintAddress)?.value ?? -1
+    let footprint = units.first.flatMap {
+      AudSpikeHost.parameter(AudSpikeHost.footprintIdentifier, of: $0)
+    }?.value ?? -1
     let firstFrames = units.map {
-      $0.auAudioUnit.parameterTree?.parameter(withAddress: AudSpikeHost.firstFrameAddress)?
-        .value ?? -1
+      AudSpikeHost.parameter(AudSpikeHost.firstFrameIdentifier, of: $0)?.value ?? -1
     }
     peakLock.lock()
     let rendering = peaks.map { $0 > 0 }
@@ -244,18 +246,13 @@ final class AudSpikeHost {
     channel.invokeMethod("status", arguments: line)
   }
 
-  // The stable id of a parameter, as aud_host_param_id computes it.
-  private static func stableId(_ text: String) -> AUParameterAddress {
-    var hash: UInt32 = 0x811c_9dc5
-    for byte in text.utf8 {
-      hash ^= UInt32(byte)
-      hash = hash &* 0x0100_0193
-    }
-    return AUParameterAddress(hash & 0x7fff_ffff)
-  }
+  // The identifiers the extension gives its read-only parameters.
+  private static let footprintIdentifier = "spike_footprint"
+  private static let firstFrameIdentifier = "spike_first_frame"
 
-  private static let footprintAddress = stableId("spike/footprint")
-  private static let firstFrameAddress = stableId("spike/firstFrame")
+  private static func parameter(_ identifier: String, of unit: AVAudioUnit) -> AUParameter? {
+    return unit.auAudioUnit.parameterTree?.allParameters.first { $0.identifier == identifier }
+  }
 
   private static func fourCC(_ code: String) -> OSType {
     return code.utf8.reduce(0) { ($0 << 8) | OSType($1) }

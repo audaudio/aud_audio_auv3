@@ -8,40 +8,48 @@ import 'package:aud_audio_auv3/aud_audio_auv3.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('audParamId', () {
-    test('is FNV-1a with the top bit cleared', () {
-      // FNV-1a of "a/b" is 0x0cc8b52c... computed by the reference below.
-      int reference(String text) {
-        var hash = 0x811c9dc5;
-        for (final unit in text.codeUnits) {
-          hash = ((hash ^ unit) * 0x01000193) & 0xFFFFFFFF;
-        }
-        return hash & 0x7FFFFFFF;
-      }
-
-      expect(audParamId('osc', 'frequency'), reference('osc/frequency'));
-      expect(audParamId('spike', 'test'), reference('spike/test'));
-      expect(audParamId('a', 'b') & 0x80000000, 0);
+  group('audParamId(nodeId, paramId)', () {
+    test('is FNV-1a of "<node id>/<param id>" with the top bit cleared', () {
+      // FNV-1a of "osc/frequency" is 0xb697a565: its id has the top bit
+      // cleared.
+      expect([
+        audParamId('a', 'b'),
+        audParamId('osc', 'frequency'),
+      ], equals([0x3a8e75c1, 0x3697a565]));
     });
   });
 
   group('AudAuv3Component', () {
     test('names the unit and its channels', () {
-      expect(AudAuv3Component.type, 'aumu');
-      expect(AudAuv3Component.subtype, 'AudS');
-      expect(AudAuv3Component.manufacturer, 'Audn');
-      expect(AudAuv3Component.name, 'Audanika: Aud Spike');
-      expect(AudAuv3Component.editorEntrypoint, 'auEditorMain');
-      expect(AudAuv3Component.editorChannel, 'aud_auv3/editor');
-      expect(AudAuv3Component.hostChannel, 'aud_auv3/host');
-      expect(AudAuv3Component.footprintParam, audParamId('spike', 'footprint'));
       expect(
-        AudAuv3Component.firstFrameParam,
-        audParamId('spike', 'firstFrame'),
+        [
+          AudAuv3Component.type,
+          AudAuv3Component.subtype,
+          AudAuv3Component.manufacturer,
+          AudAuv3Component.name,
+          AudAuv3Component.editorEntrypoint,
+          AudAuv3Component.editorChannel,
+          AudAuv3Component.hostChannel,
+        ],
+        equals([
+          'aumu',
+          'AudS',
+          'Audn',
+          'Audanika: Aud Spike',
+          'auEditorMain',
+          'aud_auv3/editor',
+          'aud_auv3/host',
+        ]),
       );
+    });
+
+    test('gives its measurement parameters the ids of node spike', () {
       expect(
-        AudAuv3Component.footprintParam,
-        isNot(AudAuv3Component.firstFrameParam),
+        [AudAuv3Component.footprintParam, AudAuv3Component.firstFrameParam],
+        equals([
+          audParamId('spike', 'footprint'),
+          audParamId('spike', 'firstFrame'),
+        ]),
       );
     });
   });

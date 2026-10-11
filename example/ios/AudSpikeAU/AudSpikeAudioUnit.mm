@@ -42,13 +42,12 @@ void ensureBallast() {
   });
 }
 
-uint32_t stableId(const char* text) {
-  uint32_t hash = 0x811c9dc5u;
-  for (const char* c = text; *c != 0; ++c) {
-    hash ^= static_cast<uint8_t>(*c);
-    hash *= 0x01000193u;
-  }
-  return hash & 0x7fffffffu;
+// Hands kAudioUnitErr_FailedInitialization to the caller.
+void failInitialization(NSError** outError) {
+  if (outError == nullptr) return;
+  *outError = [NSError errorWithDomain:NSOSStatusErrorDomain
+                                  code:kAudioUnitErr_FailedInitialization
+                              userInfo:nil];
 }
 
 double footprintMb() {
@@ -89,11 +88,11 @@ struct RenderState {
 }
 
 + (AUParameterAddress)footprintAddress {
-  return stableId("spike/footprint");
+  return aud_auv3_engine_param_id("spike", "footprint");
 }
 
 + (AUParameterAddress)firstFrameAddress {
-  return stableId("spike/firstFrame");
+  return aud_auv3_engine_param_id("spike", "firstFrame");
 }
 
 - (instancetype)initWithComponentDescription:(AudioComponentDescription)description
@@ -104,9 +103,7 @@ struct RenderState {
   ensureBallast();
   _engine = aud_auv3_engine_create(48000, kMaxFrames);
   if (_engine == nullptr) {
-    if (outError != nullptr) {
-      *outError = [NSError errorWithDomain:NSOSStatusErrorDomain code:-1 userInfo:nil];
-    }
+    failInitialization(outError);
     return nil;
   }
   _state = new RenderState();
@@ -126,10 +123,12 @@ struct RenderState {
     AudAuv3Param p{};
     if (aud_auv3_engine_param(_engine, i, &p) == 0) continue;
     const bool hertz = std::strcmp(p.unit, "Hz") == 0;
-    const bool stepped = (p.flags & (1u << 2)) != 0 && p.steps >= 2;
+    const bool stepped = (p.flags & AUD_AUV3_PARAM_STEPPED) != 0 && p.steps >= 2;
     AudioUnitParameterOptions flags =
         kAudioUnitParameterFlag_IsReadable | kAudioUnitParameterFlag_IsWritable;
-    if ((p.flags & (1u << 3)) != 0) flags |= kAudioUnitParameterFlag_DisplayLogarithmic;
+    if ((p.flags & AUD_AUV3_PARAM_LOGARITHMIC) != 0) {
+      flags |= kAudioUnitParameterFlag_DisplayLogarithmic;
+    }
     AUParameter* parameter = [AUParameterTree
         createParameterWithIdentifier:[NSString stringWithFormat:@"%s_%s", p.nodeId,
                                                                  p.paramId]
@@ -249,8 +248,12 @@ struct RenderState {
     std::free(buffer);
     buffer = static_cast<float*>(std::calloc(frames, sizeof(float)));
   }
-  aud_auv3_engine_prepare(_engine, _outputBus.format.sampleRate, frames);
-  aud_auv3_engine_set_active(_engine, 1);
+  if (aud_auv3_engine_prepare(_engine, _outputBus.format.sampleRate, frames) == 0 ||
+      aud_auv3_engine_set_active(_engine, 1) == 0) {
+    [super deallocateRenderResources];
+    failInitialization(outError);
+    return NO;
+  }
   return YES;
 }
 

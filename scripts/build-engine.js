@@ -21,6 +21,7 @@ const { spawn, spawnSync } = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const { fileURLToPath, pathToFileURL } = require('node:url');
 
 const root = path.resolve(__dirname, '..');
 
@@ -35,6 +36,7 @@ const platforms = {
 
 function run(command, args) {
   const result = spawnSync(command, args, { cwd: root, encoding: 'utf8' });
+  if (result.error) throw result.error;
   if (result.status !== 0) {
     throw new Error(`${path.basename(command)} failed:\n${result.stdout}${result.stderr}`);
   }
@@ -50,8 +52,8 @@ function packageSrc(name) {
   const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   const entry = config.packages.find((p) => p.name === name);
   if (!entry) throw new Error(`Package ${name} is not in the package config`);
-  const rootUri = new URL(entry.rootUri, `file://${configPath}`);
-  return path.join(decodeURIComponent(rootUri.pathname), 'src');
+  const rootUri = new URL(entry.rootUri, pathToFileURL(configPath));
+  return path.join(fileURLToPath(rootUri), 'src');
 }
 
 function hashOf(parts) {
@@ -128,6 +130,11 @@ async function buildSlice(platform, target) {
         const child = spawn('clang++', [...flags, '-c', job.file, '-o', `${job.object}.tmp`], {
           cwd: root,
           stdio: 'inherit',
+        });
+        // A compiler that does not start fails the job instead of the script.
+        child.on('error', (error) => {
+          console.error(`clang++: ${error.message}`);
+          resolve(-1);
         });
         child.on('close', resolve);
       });

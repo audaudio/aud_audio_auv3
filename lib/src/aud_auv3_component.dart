@@ -36,8 +36,9 @@ abstract final class AudAuv3Component {
   /// The read-only parameter with the extension's phys_footprint in MB.
   static final int footprintParam = audParamId('spike', 'footprint');
 
-  /// The read-only parameter with the milliseconds from the editor's
-  /// viewDidLoad to its first Flutter frame.
+  /// The read-only parameter with the milliseconds from the editor's first
+  /// viewWillAppear, where its Flutter engine starts, to its first Flutter
+  /// frame.
   static final int firstFrameParam = audParamId('spike', 'firstFrame');
 }
 
@@ -45,6 +46,9 @@ abstract final class AudAuv3Component {
 /// The stable id of a graph parameter: FNV-1a over `<node id>/<param id>`
 /// with the top bit cleared, as aud_host_param_id of aud_audio_graph
 /// computes it.
+///
+/// - [nodeId] the id of the node in the graph document
+/// - [paramId] the id of the parameter of that node
 int audParamId(String nodeId, String paramId) {
   var hash = 0x811c9dc5;
   for (final byte in utf8.encode('$nodeId/$paramId')) {

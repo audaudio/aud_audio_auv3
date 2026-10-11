@@ -13,13 +13,6 @@
 
 #include "aud_auv3_engine.h"
 
-namespace {
-
-// AUD_PARAM_LOGARITHMIC of aud_audio_core.
-constexpr uint32_t kParamLogarithmic = 1u << 3;
-
-}  // namespace
-
 @implementation AudSpikeViewController {
   AudSpikeAudioUnit* _audioUnit;
   FlutterEngine* _engine;
@@ -30,6 +23,7 @@ constexpr uint32_t kParamLogarithmic = 1u << 3;
   CFTimeInterval _loadStart;
   BOOL _ready;
   BOOL _welcomed;
+  BOOL _visible;
   // The values the editor shows, and the parameters it is dragging: host
   // automation reaches only the engine, so the meter timer sends the
   // values that changed, except those of a running gesture.
@@ -67,7 +61,15 @@ constexpr uint32_t kParamLogarithmic = 1u << 3;
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
+  _visible = YES;
   [self startFlutter];
+  [self startMeter];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
+  _visible = NO;
+  [self stopMeter];
 }
 
 - (void)startFlutter {
@@ -151,7 +153,7 @@ constexpr uint32_t kParamLogarithmic = 1u << 3;
   const uint32_t count = aud_auv3_engine_num_params(engine);
   for (uint32_t i = 0; i < count; ++i) {
     AudAuv3Param p{};
-    if (aud_auv3_engine_param(engine, i, &p) != 0) continue;
+    if (aud_auv3_engine_param(engine, i, &p) == 0) continue;
     AUParameter* parameter = [_audioUnit.parameterTree parameterWithAddress:p.id];
     const AUValue value =
         parameter != nil ? parameter.value : aud_auv3_engine_get_param(engine, p.id);
@@ -168,12 +170,11 @@ constexpr uint32_t kParamLogarithmic = 1u << 3;
       @"max" : @(p.max),
       @"default" : @(p.defaultValue),
       @"value" : @(value),
-      @"logarithmic" : @((p.flags & kParamLogarithmic) != 0),
+      @"logarithmic" : @((p.flags & AUD_AUV3_PARAM_LOGARITHMIC) != 0),
       @"steps" : @(p.steps),
     }];
   }
   [_channel invokeMethod:@"welcome" arguments:@{@"params" : params}];
-  __weak AudSpikeViewController* weakSelf = self;
   FlutterMethodChannel* channel = _channel;
   _token = [_audioUnit.parameterTree
       tokenByAddingParameterObserver:^(AUParameterAddress address, AUValue value) {
@@ -181,12 +182,25 @@ constexpr uint32_t kParamLogarithmic = 1u << 3;
           [channel invokeMethod:@"param" arguments:@{@"id" : @(address), @"value" : @(value)}];
         });
       }];
+  [self startMeter];
+}
+
+// Sends the meter and the values the engine plays 30 times a second, while
+// the welcomed editor is on screen.
+- (void)startMeter {
+  if (!_visible || !_welcomed || _meterTimer != nil) return;
+  __weak AudSpikeViewController* weakSelf = self;
   _meterTimer = [NSTimer timerWithTimeInterval:1.0 / 30
                                        repeats:YES
                                          block:^(NSTimer* timer) {
                                            [weakSelf sendMeter];
                                          }];
   [[NSRunLoop mainRunLoop] addTimer:_meterTimer forMode:NSRunLoopCommonModes];
+}
+
+- (void)stopMeter {
+  [_meterTimer invalidate];
+  _meterTimer = nil;
 }
 
 - (void)sendMeter {

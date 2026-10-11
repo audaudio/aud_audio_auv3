@@ -64,11 +64,14 @@ class _AudAuv3EditorState extends State<AudAuv3Editor> {
                   AudParamBinding(
                     sink: _sink
                       ..register(
-                        AudParamAddress(nodeId, paramId),
+                        AudParamAddress(nodeId: nodeId, paramId: paramId),
                         p['id']! as int,
                       ),
                     spec: AudParamSpec(
-                      address: AudParamAddress(nodeId, paramId),
+                      address: AudParamAddress(
+                        nodeId: nodeId,
+                        paramId: paramId,
+                      ),
                       min: (p['min']! as num).toDouble(),
                       max: (p['max']! as num).toDouble(),
                       defaultValue: (p['default']! as num).toDouble(),
@@ -93,9 +96,11 @@ class _AudAuv3EditorState extends State<AudAuv3Editor> {
 
   @override
   void dispose() {
+    _channel.setMethodCallHandler(null);
     for (final binding in _bindings) {
       binding.dispose();
     }
+    unawaited(_sink.close());
     _meter.dispose();
     super.dispose();
   }
@@ -148,8 +153,12 @@ class _AudUnitSink implements AudParamSink {
 
   void receive(int id, double value) {
     final address = _addresses[id];
-    if (address != null) _changes.add(AudParamChange(address, value));
+    if (address != null) {
+      _changes.add(AudParamChange(address: address, value: value));
+    }
   }
+
+  Future<void> close() => _changes.close();
 
   @override
   Stream<AudParamChange> get changes => _changes.stream;

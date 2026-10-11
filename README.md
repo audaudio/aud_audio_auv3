@@ -16,7 +16,8 @@ step S20.
   static library for `iphoneos` and `iphonesimulator` into `build/ios`.
 - `AudAuv3Component` (`lib/`): the component description, the channel
   names and the parameter ids that the extension, its editor and the
-  container app share.
+  container app share. `audParamId(nodeId, paramId)` computes a
+  parameter's id as `aud_host_param_id` of `aud_audio_graph` does.
 - The example (`example/`): the container app and the extension
   `AudSpikeAU`.
   - The extension: an `AUAudioUnit` with a parameter tree and a render

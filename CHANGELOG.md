@@ -18,6 +18,23 @@
 
 - Depend on aud_audio_core and aud_audio_graph 0.4.0; drop the template's FFI sample
 
+
+### Fixed
+
+- Fix the AUv3 editor parameters and the review findings
+
+- Read the success value of aud_auv3_engine_param right: the editor got no parameters
+
+- Fail allocateRenderResources when the engine cannot prepare or start
+
+- Add aud_auv3_engine_param_id and the parameter flags instead of copies
+
+- Stop the meter timer while the editor is hidden and close the sink of the editor
+
+- End a run whose instantiation fails; harden build-engine.js
+
+- Test audParamId with fixed vectors and document it in both READMEs
+
 ## 0.0.2 - 2026-10-08
 
 ### Added

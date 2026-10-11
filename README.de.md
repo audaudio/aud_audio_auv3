@@ -1,6 +1,6 @@
 # aud_audio_auv3
 
-Audio Unit v3 extension of the Audanika Audio Engine over its headless host.
+Audio-Unit-v3-Extension der Audanika Audio Engine über ihrem Headless Host.
 
 Teil der Audanika Audio Engine; geplant in [aud_audio_pm](https://github.com/audaudio/aud_audio_pm).
 
@@ -17,7 +17,9 @@ Messungen; die Shell selbst ist Schritt S20.
   `build/ios`.
 - `AudAuv3Component` (`lib/`): die Komponentenbeschreibung, die
   Kanalnamen und die Parameter-Ids, die die Extension, ihr Editor und die
-  Container-App teilen.
+  Container-App teilen. `audParamId(nodeId, paramId)` berechnet die Id
+  eines Parameters so, wie `aud_host_param_id` von `aud_audio_graph` es
+  tut.
 - Das Beispiel (`example/`): die Container-App und die Extension
   `AudSpikeAU`.
   - Die Extension: eine `AUAudioUnit` mit Parameterbaum und Render-Block

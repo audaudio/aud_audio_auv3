@@ -29,10 +29,14 @@ extern "C" {
 
 typedef struct AudAuv3Engine AudAuv3Engine;
 
+// Flags of AudAuv3Param, as AUD_PARAM_* of aud_audio_core.
+#define AUD_AUV3_PARAM_STEPPED (1u << 2)
+#define AUD_AUV3_PARAM_LOGARITHMIC (1u << 3)
+
 // A parameter of the graph document. The strings stay valid while the
 // engine lives.
 typedef struct AudAuv3Param {
-  uint32_t id;  // the stable id: FNV-1a of "<node id>/<param id>"
+  uint32_t id;  // the stable id, see aud_auv3_engine_param_id
   const char* nodeId;
   const char* paramId;
   const char* name;
@@ -51,16 +55,22 @@ AudAuv3Engine* aud_auv3_engine_create(double sampleRate, uint32_t maxFrames);
 // [non-realtime] Destroys the engine; rendering must have stopped.
 void aud_auv3_engine_destroy(AudAuv3Engine* engine);
 
-// The parameters of the document, ordered by id.
+// The parameters of the document, ordered by id. aud_auv3_engine_param
+// copies the one at `index` into `out`; 1 on success, 0 on a failure.
 uint32_t aud_auv3_engine_num_params(const AudAuv3Engine* engine);
 int aud_auv3_engine_param(const AudAuv3Engine* engine, uint32_t index,
                           AudAuv3Param* out);
 
-// [non-realtime] Prepares rendering for a sample rate and a block size.
+// [any thread] The stable id of parameter `paramId` of node `nodeId`, as
+// aud_host_param_id of aud_audio_graph computes it; 0 for a NULL argument.
+uint32_t aud_auv3_engine_param_id(const char* nodeId, const char* paramId);
+
+// [non-realtime] Prepares rendering for a sample rate and a block size; 1
+// on success, 0 on a failure.
 int aud_auv3_engine_prepare(AudAuv3Engine* engine, double sampleRate,
                             uint32_t maxFrames);
 
-// [non-realtime] Starts or stops rendering.
+// [non-realtime] Starts or stops rendering; 1 on success, 0 on a failure.
 int aud_auv3_engine_set_active(AudAuv3Engine* engine, int active);
 
 // [non-realtime] Sets and reads the plain value of a parameter.
