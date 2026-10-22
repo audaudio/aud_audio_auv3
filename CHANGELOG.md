@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- Resolve the example in a pub workspace
+
 ## 0.1.0 - 2026-10-11
 
 ### Added
@@ -34,6 +40,7 @@
 - End a run whose instantiation fails; harden build-engine.js
 
 - Test audParamId with fixed vectors and document it in both READMEs
+
 
 ## 0.0.2 - 2026-10-08
 

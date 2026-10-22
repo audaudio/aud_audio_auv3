@@ -8,6 +8,11 @@ repository: https://github.com/audaudio/aud_audio_auv3
 environment:
   sdk: ^3.12.2
 
+# The example resolves together with the package, so that upgrading the
+# package upgrades the example too.
+workspace:
+  - example
+
 dependencies:
   aud_audio_core:
     git:
@@ -24,4 +29,5 @@ dev_dependencies:
   dna_audanika: ^0.0.2
   flutter_lints: ^6.0.0
   helix: ^1.11.0
-  test: ^1.33.0
+  # Within the test_api that flutter_test of the example pins.
+  test: ^1.31.1
