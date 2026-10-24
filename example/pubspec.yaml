@@ -45,7 +45,7 @@ dependencies:
     git:
       url: git@github.com:audaudio/aud_audio_ui_controls.git
       tag_pattern: "{{version}}"
-    version: ^0.1.0
+    version: ^0.1.1
 
 dev_dependencies:
   flutter_test:
