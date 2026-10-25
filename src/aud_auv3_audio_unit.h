@@ -24,6 +24,9 @@
 //   parameter changes at their sample offsets, the notes of the editor at
 //   the block's start, the host's musical context and transport state as
 //   the graph's transport; offline, a block waits for its preset to load.
+// - MIDI output "MIDI Out": the editor's notes reach the host at the
+//   block's start as they reach the graph, through the host's MIDI output
+//   block, or its MIDI event list block when it sets only that one.
 //
 // The extension's principal class (AudAuv3ViewController) creates it.
 

@@ -147,5 +147,45 @@ int main() {
     });
   });
 
+  group("midiOutputBytes", [] {
+    test("a note on has 3 bytes", [] {
+      uint8_t out[3] = {};
+      expectEqual(midiOutputBytes(0x91, 60, 100, out), 3u);
+      expectEqual(out[0], uint8_t{0x91});
+      expectEqual(out[1], uint8_t{60});
+      expectEqual(out[2], uint8_t{100});
+    });
+    test("channel pressure and program change have 2", [] {
+      uint8_t out[3] = {};
+      expectEqual(midiOutputBytes(0xD0, 64, 99, out), 2u);
+      expectEqual(out[1], uint8_t{64});
+      expectEqual(out[2], uint8_t{0});
+      expectEqual(midiOutputBytes(0xC3, 5, 0, out), 2u);
+    });
+    test("data bytes keep 7 bits", [] {
+      uint8_t out[3] = {};
+      midiOutputBytes(0xB0, 0xFF, 0x80, out);
+      expectEqual(out[1], uint8_t{0x7F});
+      expectEqual(out[2], uint8_t{0});
+    });
+    test("a status without a channel voice message has none", [] {
+      uint8_t out[3] = {};
+      expectEqual(midiOutputBytes(0xF8, 0, 0, out), 0u);
+      expectEqual(midiOutputBytes(0x40, 0, 0, out), 0u);
+    });
+  });
+
+  group("midiOutputUmp", [] {
+    test("a note off in group 0", [] {
+      expectEqual(midiOutputUmp(0x82, 64, 0), 0x20824000u);
+    });
+    test("channel pressure without its second data byte", [] {
+      expectEqual(midiOutputUmp(0xD5, 70, 99), 0x20D54600u);
+    });
+    test("none for a status without a channel voice message", [] {
+      expectEqual(midiOutputUmp(0xFE, 0, 0), 0u);
+    });
+  });
+
   return aud_auv3_test::finish();
 }

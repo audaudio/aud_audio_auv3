@@ -124,6 +124,11 @@ report("presets",
        ["factory": factory.map { $0.name },
         "parameters": parameters.map { $0.identifier }])
 
+// The MIDI output a host offers as a MIDI source; the host's block takes
+// what the unit sends - the editor's notes, none here.
+report("midiOutput", au.midiOutputNames == ["MIDI Out"], ["names": au.midiOutputNames])
+au.midiOutputEventBlock = { _, _, _, _ in noErr }
+
 // .............................................................................
 // Offline rendering
 

@@ -8,8 +8,10 @@
 // (ticket 41): the sample offset of an event in the block, MIDI 1.0
 // messages and UMP packets as events on the graph's event input (port 0),
 // and the host's musical context and transport state as the host transport
-// of aud_audio_plugin. Plain C++ without Apple's types, so that the native
-// tests cover it; the realtime thread calls it, nothing allocates.
+// of aud_audio_plugin; and what the render block hands the host's MIDI
+// output, as MIDI 1.0 bytes or a UMP word. Plain C++ without Apple's types,
+// so that the native tests cover it; the realtime thread calls it, nothing
+// allocates.
 
 #ifndef AUD_AUV3_EVENTS_HPP
 #define AUD_AUV3_EVENTS_HPP
@@ -68,6 +70,19 @@ struct HostTransportState {
 // downbeat, the loop is the cycle.
 HostTransport hostTransportOf(const HostMusicalContext& context,
                               const HostTransportState& state);
+
+// #############################################################################
+// Writes the MIDI 1.0 channel voice message of `status`, `data1` and
+// `data2` to `out` for a host's MIDI output and returns its length: 2 bytes
+// for a program change or channel pressure, 3 for the others, 0 for a
+// status that starts no channel voice message.
+uint32_t midiOutputBytes(uint8_t status, uint8_t data1, uint8_t data2, uint8_t out[3]);
+
+// #############################################################################
+// The same message as the UMP word of a MIDI 1.0 channel voice message
+// (message type 2) in group 0, for a host's MIDI event list; 0 for a status
+// as above.
+uint32_t midiOutputUmp(uint8_t status, uint8_t data1, uint8_t data2);
 
 }  // namespace aud_auv3
 

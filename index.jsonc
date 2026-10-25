@@ -8,7 +8,7 @@
   "name": "aud_audio_auv3",
   "summary": "Audio Unit v3 shell of the Audanika Audio Engine over its headless host, on macOS and iOS.",
   "domain": [
-    "AUv3 shell (S20, plugin-011) on the shared core of aud_audio_plugin: parameters, factory presets, fullState, host MIDI 1.0 and UMP, musical context and transport, offline rendering, sample cache budget per platform",
+    "AUv3 shell (S20, plugin-011) on the shared core of aud_audio_plugin: parameters, factory presets, fullState, host MIDI 1.0 and UMP, the editor's notes as MIDI output, musical context and transport, offline rendering, sample cache budget per platform",
     "Editor inside the extension (plugin-012): the app's Flutter code at an entry point, FlutterEngineGroup on iOS, the shell protocol through dart:ffi (AudAuv3Shell)",
     "Build of a static library per platform, the extension's Info.plist and an xcconfig for an app's extension target without code; example app for macOS and iOS, test host, auval"
   ],

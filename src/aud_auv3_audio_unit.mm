@@ -90,6 +90,8 @@ struct RenderState {
   AudSpscQueue<EditorMidi> editorMidi{256};
   AUHostMusicalContextBlock musicalContext = nil;
   AUHostTransportStateBlock transportState = nil;
+  AUMIDIOutputEventBlock midiOutput = nil;
+  AUMIDIEventListBlock midiOutputList = nil;
   AUAudioFrameCount maxFrames = kDefaultMaxFrames;
   std::vector<float> scratch;
   TransportClock clock;
@@ -120,6 +122,28 @@ struct RenderState {
     return -1;
   }
 };
+
+// Hands a note of the editor to the host's MIDI output at the block's
+// start.
+void sendMidi(const RenderState& state, const EditorMidi& midi,
+              Float64 sampleTime) AUD_PLUGIN_NONBLOCKING {
+  const auto time = static_cast<AUEventSampleTime>(sampleTime);
+  if (state.midiOutput != nil) {
+    uint8_t bytes[3];
+    const uint32_t length = midiOutputBytes(midi.status, midi.data1, midi.data2, bytes);
+    if (length > 0) state.midiOutput(time, 0, length, bytes);
+  } else if (state.midiOutputList != nil) {
+    const uint32_t word = midiOutputUmp(midi.status, midi.data1, midi.data2);
+    if (word == 0) return;
+    MIDIEventList list{};
+    list.protocol = kMIDIProtocol_1_0;
+    list.numPackets = 1;
+    list.packet[0].timeStamp = 0;
+    list.packet[0].wordCount = 1;
+    list.packet[0].words[0] = word;
+    state.midiOutputList(time, 0, &list);
+  }
+}
 
 }  // namespace
 
@@ -421,6 +445,10 @@ struct RenderState {
   return _tree;
 }
 
+- (NSArray<NSString*>*)MIDIOutputNames {
+  return @[ @"MIDI Out" ];
+}
+
 - (NSArray<NSNumber*>*)channelCapabilities {
   return @[ @0, @2 ];
 }
@@ -534,6 +562,9 @@ struct RenderState {
   _render->scratch.assign(static_cast<size_t>(self.maximumFramesToRender) * 2, 0.0f);
   _render->musicalContext = self.musicalContextBlock;
   _render->transportState = self.transportStateBlock;
+  _render->midiOutput = self.MIDIOutputEventBlock;
+  _render->midiOutputList = nil;
+  if (_render->midiOutput == nil) _render->midiOutputList = self.MIDIOutputEventListBlock;
   _render->clock.reset(rate);
   _render->sampleRate.store(rate);
   AVAudioFormat* format = _outputBus.format;
@@ -579,6 +610,8 @@ struct RenderState {
   _engine->setActive(false);
   _render->musicalContext = nil;
   _render->transportState = nil;
+  _render->midiOutput = nil;
+  _render->midiOutputList = nil;
   [super deallocateRenderResources];
 }
 
@@ -601,6 +634,7 @@ struct RenderState {
     EditorMidi midi{};
     while (state->editorMidi.pop(midi)) {
       state->add(midiEvent(midi.status, midi.data1, midi.data2, 0));
+      sendMidi(*state, midi, timestamp->mSampleTime);
     }
     for (size_t i = 0; i < state->settings->controls.size(); ++i) {
       if (!state->controlDirty[i].exchange(false)) continue;

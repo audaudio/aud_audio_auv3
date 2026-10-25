@@ -71,4 +71,22 @@ HostTransport hostTransportOf(const HostMusicalContext& context,
   return host;
 }
 
+// #############################################################################
+uint32_t midiOutputBytes(uint8_t status, uint8_t data1, uint8_t data2, uint8_t out[3]) {
+  const uint32_t data = midiDataBytes(status);
+  if (data == 0) return 0;
+  out[0] = status;
+  out[1] = data1 & 0x7F;
+  out[2] = data > 1 ? data2 & 0x7F : 0;
+  return 1 + data;
+}
+
+// #############################################################################
+uint32_t midiOutputUmp(uint8_t status, uint8_t data1, uint8_t data2) {
+  uint8_t bytes[3];
+  if (midiOutputBytes(status, data1, data2, bytes) == 0) return 0;
+  return (0x2u << 28) | (static_cast<uint32_t>(bytes[0]) << 16) |
+         (static_cast<uint32_t>(bytes[1]) << 8) | bytes[2];
+}
+
 }  // namespace aud_auv3
