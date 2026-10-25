@@ -13,7 +13,19 @@
 // is 1 when one fails.
 //
 //   aud_auv3_host <type> <subtype> <manufacturer> [--presets n]
-//     [--editor seconds]
+//     [--editor seconds] [--snapshot <png>] [--tap x,y] [--play seconds]
+//
+// --play renders blocks of 128 frames at the pace of the clock, as a host
+// plays live, with a new note every 120 ms over five octaves, and counts
+// the gaps: runs of 64 or more silent frames while notes sound.
+//
+// --tap clicks into the open editor at the fractions x and y of its width
+// and height (from the top) and renders a second without notes of the
+// host: what sounds came from the editor. The click is a system event:
+// the editor's remote view ignores events a host makes for its own
+// window. It needs the Accessibility permission of the app responsible
+// for the process that starts the host, and takes a snapshot while the
+// button is down when --snapshot is given.
 
 import AVFoundation
 import AppKit
@@ -53,6 +65,16 @@ func option(_ name: String) -> Double? {
 }
 let presetLimit = Int(option("--presets") ?? 1000)
 let editorSeconds = option("--editor") ?? 1
+// A PNG of the editor's window, taken after editorSeconds.
+let snapshot: String? = arguments.firstIndex(of: "--snapshot").flatMap {
+  $0 + 1 < arguments.count ? arguments[$0 + 1] : nil
+}
+let tap: (Double, Double)? = arguments.firstIndex(of: "--tap").flatMap { at in
+  guard at + 1 < arguments.count else { return nil }
+  let parts = arguments[at + 1].split(separator: ",").compactMap { Double($0) }
+  return parts.count == 2 ? (parts[0], parts[1]) : nil
+}
+let playSeconds = option("--play")
 
 let description = AudioComponentDescription(
   componentType: fourCC(arguments[1]), componentSubType: fourCC(arguments[2]),
@@ -112,15 +134,25 @@ final class Renderer {
 
   let units: [AVAudioUnit]
 
-  init(_ units: [AVAudioUnit], frames: AVAudioFrameCount) throws {
+  // The engine sets its units to render offline in the mode .offline, so
+  // that a unit's streams wait for the disk; .realtime keeps them live.
+  init(_ units: [AVAudioUnit], frames: AVAudioFrameCount,
+       mode: AVAudioEngineManualRenderingMode = .offline) throws {
     self.units = units
     for unit in units {
       engine.attach(unit)
       engine.connect(unit, to: engine.mainMixerNode, format: format)
     }
-    try engine.enableManualRenderingMode(.offline, format: format, maximumFrameCount: frames)
+    try engine.enableManualRenderingMode(mode, format: format, maximumFrameCount: frames)
     try engine.start()
     buffer = AVAudioPCMBuffer(pcmFormat: engine.manualRenderingFormat, frameCapacity: frames)!
+  }
+
+  // Renders a block in the mode .realtime.
+  func renderLive(_ frames: AVAudioFrameCount) -> Bool {
+    var status = noErr
+    buffer.frameLength = frames
+    return engine.manualRenderingBlock(frames, buffer.mutableAudioBufferList, &status) == .success
   }
 
   // Stops the engine and gives the units free for another one.
@@ -213,6 +245,50 @@ do {
   realtime.close()
   report("realtime", worstMs < 2.67, ["meanMs": totalMs / 375, "maxMs": worstMs,
                                       "budgetMs": 128.0 / 48.0])
+
+  // Live play: blocks at the pace of the clock, a note every 120 ms, on an
+  // instance of its own - one out of process may keep rendering offline
+  // after the host turned it off.
+  if let playSeconds, let player = load().0, let send = player.auAudioUnit.scheduleMIDIEventBlock {
+    let live = try Renderer([player], frames: 128, mode: .realtime)
+    let blockNs = UInt64(128.0 / 48000.0 * 1e9)
+    let blocks = Int(playSeconds * 48000 / 128)
+    let noteBlocks = 45  // 120 ms
+    var playing: [UInt8] = []
+    var gaps = 0
+    var silentRun = 0
+    var peak: Float = 0
+    var failedBlocks = 0
+    var next = DispatchTime.now().uptimeNanoseconds
+    for b in 0..<blocks {
+      if b % noteBlocks == 0 {
+        // Each note sounds for four notes' time.
+        if playing.count >= 4 { send(AUEventSampleTimeImmediate, 0, 3, [0x80, playing.removeFirst(), 0]) }
+        let note = UInt8(36 + (b / noteBlocks * 7) % 60)
+        send(AUEventSampleTimeImmediate, 0, 3, [0x90, note, 100])
+        playing.append(note)
+      }
+      if !live.renderLive(128) { failedBlocks += 1 }
+      let left = live.buffer.floatChannelData![0]
+      for i in 0..<Int(live.buffer.frameLength) {
+        let value = abs(left[i])
+        peak = max(peak, value)
+        if value == 0 {
+          silentRun += 1
+          if silentRun == 64 && b > noteBlocks { gaps += 1 }
+        } else {
+          silentRun = 0
+        }
+      }
+      next += blockNs
+      let now = DispatchTime.now().uptimeNanoseconds
+      if next > now { usleep(useconds_t((next - now) / 1000)) }
+    }
+    for note in playing { send(AUEventSampleTimeImmediate, 0, 3, [0x80, note, 0]) }
+    live.close()
+    report("play", gaps == 0 && failedBlocks == 0 && peak > 0.001,
+           ["seconds": playSeconds, "gaps": gaps, "failedBlocks": failedBlocks, "peak": peak])
+  }
 } catch {
   report("render", false, ["error": "\(error)"])
 }
@@ -226,6 +302,8 @@ if let second {
     let renderer = try Renderer([second], frames: 512)
     notes(second.auAudioUnit, on: true)
     let peak = try renderer.render(94, frames: 512)
+    notes(second.auAudioUnit, on: false)
+    renderer.close()
     report("twoInstances", peak > 0.001, ["peak": peak])
   } catch {
     report("twoInstances", false, ["error": "\(error)"])
@@ -250,7 +328,50 @@ if let controller {
   window.contentViewController = controller
   window.orderFrontRegardless()
   wait(editorSeconds) { false }
-  report("editor", true, ["size": "\(controller.preferredContentSize)"])
+  var fields: [String: Any] = ["size": "\(controller.preferredContentSize)"]
+  if let tap, let renderer = try? Renderer([unit], frames: 512) {
+    _ = try? renderer.render(94, frames: 512)  // the host's notes fade
+    let silence = (try? renderer.render(20, frames: 512)) ?? -1
+    // Quartz counts from the top of the main screen.
+    let frame = window.contentLayoutRect
+    let origin = window.convertToScreen(frame).origin
+    let height = NSScreen.screens.first?.frame.height ?? 0
+    let point = CGPoint(
+      x: origin.x + frame.width * tap.0,
+      y: height - (origin.y + frame.height * (1 - tap.1)))
+    let source = CGEventSource(stateID: .hidSystemState)
+    func click(_ type: CGEventType) {
+      CGEvent(mouseEventSource: source, mouseType: type,
+              mouseCursorPosition: point, mouseButton: .left)?.post(tap: .cghidEventTap)
+    }
+    click(.leftMouseDown)
+    wait(0.3) { false }
+    if let snapshot {
+      let pressed = Process()
+      pressed.executableURL = URL(fileURLWithPath: "/usr/sbin/screencapture")
+      pressed.arguments = ["-x", "-o", "-l", "\(window.windowNumber)",
+                           snapshot.replacingOccurrences(of: ".png", with: "-pressed.png")]
+      try? pressed.run()
+      pressed.waitUntilExit()
+    }
+    let peak = (try? renderer.render(94, frames: 512)) ?? -1
+    click(.leftMouseUp)
+    renderer.close()
+    fields["tapPeak"] = peak
+    fields["silenceBefore"] = silence
+    if !(peak > 0.001 && peak > silence * 2) { failed = true }
+  }
+  if let snapshot {
+    // The window shows another process's view: only the window server
+    // has its pixels.
+    let capture = Process()
+    capture.executableURL = URL(fileURLWithPath: "/usr/sbin/screencapture")
+    capture.arguments = ["-x", "-o", "-l", "\(window.windowNumber)", snapshot]
+    try? capture.run()
+    capture.waitUntilExit()
+    fields["snapshot"] = snapshot
+  }
+  report("editor", true, fields)
   window.close()
 } else {
   report("editor", false)

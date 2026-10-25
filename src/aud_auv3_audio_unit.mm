@@ -8,9 +8,12 @@
 
 #import <AVFoundation/AVFoundation.h>
 
+#include <mach/mach_time.h>
+
 #include <algorithm>
 #include <atomic>
 #include <cmath>
+#include <cstdio>
 #include <memory>
 #include <string>
 #include <vector>
@@ -32,6 +35,13 @@ constexpr uint32_t kMaxEvents = 1024;
 
 // How long an offline block waits at most for a preset to load.
 constexpr uint32_t kOfflineLoadMs = 30'000;
+
+// Nanoseconds per tick of mach_absolute_time.
+const double kTickNs = [] {
+  mach_timebase_info_data_t timebase{};
+  mach_timebase_info(&timebase);
+  return static_cast<double>(timebase.numer) / timebase.denom;
+}();
 
 // The key of the shell's state in fullState.
 NSString* const kStateKey = @"aud_state";
@@ -88,6 +98,17 @@ struct RenderState {
   AudEvent events[kMaxEvents];
   uint32_t numEvents = 0;
 
+  // The render meter: blocks, the realtime ones that took more than 3/4 of
+  // their duration, the slowest in host ticks, the last block's size, buffers
+  // and rate; the main thread reads and resets it.
+  std::atomic<uint64_t> blocks{0};
+  std::atomic<uint64_t> late{0};
+  std::atomic<uint64_t> slowestTicks{0};
+  std::atomic<uint32_t> lastFrames{0};
+  std::atomic<uint32_t> lastBuffers{0};
+  std::atomic<uint32_t> lastChannelsPerBuffer{0};
+  std::atomic<double> sampleRate{kDefaultSampleRate};
+
   void add(const AudEvent& event) AUD_PLUGIN_NONBLOCKING {
     if (numEvents < kMaxEvents) events[numEvents++] = event;
   }
@@ -114,6 +135,7 @@ struct RenderState {
   // observer must not hand back to the engine.
   std::atomic<bool> _echo;
   std::shared_ptr<std::atomic<bool>> _alive;
+  dispatch_source_t _meter;
   AUAudioUnitBus* _outputBus;
   AUAudioUnitBusArray* _outputBusArray;
   AUParameterTree* _tree;
@@ -204,6 +226,7 @@ struct RenderState {
 
 - (void)dealloc {
   if (_alive) _alive->store(false);
+  if (_meter != nil) dispatch_source_cancel(_meter);
 }
 
 // .............................................................................
@@ -365,9 +388,22 @@ struct RenderState {
   return _editorSettings;
 }
 
+// New settings change the state: hosts that observe fullState or
+// fullStateForDocument learn of it.
 - (void)setEditorSettings:(NSString*)editorSettings {
-  if (editorSettings.length > kMaxEditorSettings) return;
+  const NSUInteger bytes = [editorSettings lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+  if (bytes > kMaxEditorSettings) {
+    logError("The editor's settings of " + std::to_string(bytes) + " bytes are longer than " +
+             std::to_string(kMaxEditorSettings));
+    return;
+  }
+  if ([editorSettings isEqualToString:_editorSettings]) return;
+  [self willChangeValueForKey:@"fullState"];
+  [self willChangeValueForKey:@"fullStateForDocument"];
   _editorSettings = [editorSettings copy];
+  [self didChangeValueForKey:@"fullStateForDocument"];
+  [self didChangeValueForKey:@"fullState"];
+  logInfo("The editor's settings changed: " + std::to_string(bytes) + " bytes");
 }
 
 - (void)playEditorStatus:(uint8_t)status data1:(uint8_t)data1 data2:(uint8_t)data2 {
@@ -438,19 +474,26 @@ struct RenderState {
   }
   saved.editor = _editorSettings.UTF8String;
   state[kStateKey] = @(encodeState(saved).c_str());
+  logInfo("The host takes the state: preset " + saved.preset + ", " +
+          std::to_string(saved.editor.size()) + " bytes of the editor's settings");
   return state;
 }
 
 - (void)setFullState:(NSDictionary<NSString*, id>*)fullState {
   [super setFullState:fullState];
   NSString* text = [fullState[kStateKey] isKindOfClass:[NSString class]] ? fullState[kStateKey] : nil;
-  if (text == nil) return;
+  if (text == nil) {
+    logInfo("The host restores a state without the shell's");
+    return;
+  }
   ShellState restored;
   std::string error;
   if (!decodeState(text.UTF8String, &restored, &error)) {
     logError("The state does not read: " + error);
     return;
   }
+  logInfo("The host restores the state: preset " + restored.preset + ", " +
+          std::to_string(restored.editor.size()) + " bytes of the editor's settings");
   // The preset first, its values after: the state's values are newer. A
   // preset the extension no longer has keeps the one that plays.
   const int32_t index = _settings.presetIndex(restored.preset);
@@ -492,7 +535,44 @@ struct RenderState {
   _render->musicalContext = self.musicalContextBlock;
   _render->transportState = self.transportStateBlock;
   _render->clock.reset(rate);
+  _render->sampleRate.store(rate);
+  AVAudioFormat* format = _outputBus.format;
+  logInfo(std::string("Render resources: ") + std::to_string(static_cast<int>(rate)) + " Hz, " +
+          std::to_string(format.channelCount) + " channels" +
+          (format.interleaved ? " interleaved" : "") +
+          (format.commonFormat == AVAudioPCMFormatFloat32 ? "" : ", not float32") + ", at most " +
+          std::to_string(self.maximumFramesToRender) + " frames");
+  [self startMeter];
   return YES;
+}
+
+// Logs the render meter every 2 s while the unit renders: what a host's
+// overloads come from shows in the unified log.
+- (void)startMeter {
+  if (_meter != nil) return;
+  _meter = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+  dispatch_source_set_timer(_meter, dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC),
+                            2 * NSEC_PER_SEC, NSEC_PER_SEC / 10);
+  RenderState* state = _render.get();
+  std::shared_ptr<std::atomic<bool>> alive = _alive;
+  dispatch_source_set_event_handler(_meter, ^{
+    if (!alive->load()) return;
+    const uint64_t blocks = state->blocks.exchange(0);
+    if (blocks == 0) return;
+    const uint64_t late = state->late.exchange(0);
+    const double slowest = state->slowestTicks.exchange(0) * kTickNs / 1e6;
+    const uint32_t frames = state->lastFrames.load();
+    const double rate = state->sampleRate.load();
+    char line[240];
+    std::snprintf(line, sizeof(line),
+                  "Render: %llu blocks of %u frames at %.0f Hz in %u buffers of %u channels, "
+                  "slowest %.2f ms of %.2f ms, %llu late",
+                  static_cast<unsigned long long>(blocks), frames, rate,
+                  state->lastBuffers.load(), state->lastChannelsPerBuffer.load(), slowest,
+                  frames / rate * 1000, static_cast<unsigned long long>(late));
+    (late > 0 ? logError : logInfo)(line);
+  });
+  dispatch_resume(_meter);
 }
 
 - (void)deallocateRenderResources {
@@ -512,6 +592,7 @@ struct RenderState {
     (void)outputBusNumber;
     (void)pullInputBlock;
     if (frames > state->maxFrames) return kAudioUnitErr_TooManyFramesToProcess;
+    const uint64_t started = mach_absolute_time();
     Engine* engine = state->engine;
     state->numEvents = 0;
 
@@ -629,6 +710,22 @@ struct RenderState {
     block.numEvents = state->numEvents;
     block.transport = &state->snapshot;
     engine->render(block);
+
+    const uint64_t ticks = mach_absolute_time() - started;
+    state->blocks.fetch_add(1, std::memory_order_relaxed);
+    state->lastFrames.store(frames, std::memory_order_relaxed);
+    state->lastBuffers.store(output->mNumberBuffers, std::memory_order_relaxed);
+    state->lastChannelsPerBuffer.store(output->mBuffers[0].mNumberChannels,
+                                       std::memory_order_relaxed);
+    if (ticks > state->slowestTicks.load(std::memory_order_relaxed)) {
+      state->slowestTicks.store(ticks, std::memory_order_relaxed);
+    }
+    // Offline a block may wait for its preset; only realtime ones are late.
+    if (!offline &&
+        static_cast<double>(ticks) * kTickNs >
+            frames / state->sampleRate.load(std::memory_order_relaxed) * 0.75e9) {
+      state->late.fetch_add(1, std::memory_order_relaxed);
+    }
     return noErr;
   };
 }

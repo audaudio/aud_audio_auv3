@@ -8,10 +8,11 @@
 // --appex), registers the extension with the system and runs the test host
 // test/host/aud_auv3_host.swift on it (ticket 41): the host loads the unit
 // out of process as Logic Pro does. With --validate it runs Apple's
-// auval as well. macOS only.
+// auval as well, with --play it plays live for that many seconds. macOS
+// only.
 //
 //   node scripts/host.js [--sign <identity>] [--presets n] [--validate]
-//     [--editor seconds] [--skip-build]
+//     [--editor seconds] [--play seconds] [--skip-build]
 
 'use strict';
 
@@ -69,6 +70,7 @@ async function main() {
   const { type, subtype, manufacturer } = config.auv3;
   const started = new Date(Date.now() - 1000);
   const args = [type, subtype, manufacturer, '--presets', option(argv, '--presets', '1000'), '--editor', option(argv, '--editor', '1')];
+  if (option(argv, '--play')) args.push('--play', option(argv, '--play'));
   const result = spawnSync(host, args, { stdio: 'inherit' });
   let failed = result.status !== 0;
   // The editor said hello: its Dart code ran inside the extension and

@@ -40,8 +40,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)playEditorStatus:(uint8_t)status data1:(uint8_t)data1 data2:(uint8_t)data2;
 
 // .............................................................................
-// The settings of the editor as the editor wrote them; kept with the
-// host's project in fullState.
+// [main] The settings of the editor as the editor wrote them; kept with the
+// host's project in fullState. A change notifies the observers of fullState
+// and fullStateForDocument; settings longer than kMaxEditorSettings bytes
+// are refused.
 @property(nonatomic, copy) NSString* editorSettings;
 
 // .............................................................................

@@ -6,6 +6,10 @@
 
 - Add the AUv3 shell for macOS and iOS on aud_audio_plugin
 
+### Changed
+
+- Notify state observers of the editor's settings
+
 ## 0.1.1 - 2026-10-24
 
 ### Changed
