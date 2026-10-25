@@ -12,8 +12,10 @@ extension with the app's sound and the app's own Flutter UI as its editor
 ([doc/plugin-bundle.md](doc/plugin-bundle.md)).
 
 - **The unit** (`src/aud_auv3_audio_unit.h`): an `AUAudioUnit` over the
-  engine of `aud_audio_plugin` - parameters, factory presets, `fullState`,
-  the host's MIDI and transport, offline rendering.
+  engine of `aud_audio_plugin` - parameters, factory presets, `fullState`
+  with the editor's settings, whose change notifies the host, the host's
+  MIDI and transport, offline rendering, the editor's notes as the MIDI
+  output "MIDI Out", and a render meter in the system log every 2 s.
 - **The editor** (`src/aud_auv3_view_controller.mm`,
   `src/aud_auv3_editor_bridge.h`): Flutter inside the extension, which
   talks to the unit with `dart:ffi` (`src/aud_auv3_editor_api.h`) in the
@@ -39,7 +41,8 @@ node scripts/host.js --sign "<identity>" --validate
 builds the example's container app with its extension for macOS, registers
 it and runs the test host `test/host/aud_auv3_host.swift`, which loads the
 unit out of process as Logic Pro does: presets, rendering, state, two
-instances, realtime blocks and the editor; `--validate` runs `auval` too.
+instances, realtime blocks, the MIDI output and the editor; `--validate`
+runs `auval` too, `--play <seconds>` plays live in the realtime mode.
 
 On iOS: `node scripts/build-plugin.js --config example/plugin/plugin.json
 --platform ios`, then build and install `example/ios` with Xcode; its App

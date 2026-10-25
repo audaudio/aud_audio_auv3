@@ -13,8 +13,11 @@ Flutter-Oberfläche der App als Editor
 ([doc/plugin-bundle.md](doc/plugin-bundle.md)).
 
 - **Die Unit** (`src/aud_auv3_audio_unit.h`): eine `AUAudioUnit` über der
-  Engine von `aud_audio_plugin` - Parameter, Werks-Presets, `fullState`,
-  MIDI und Transport des Hosts, Offline-Rendering.
+  Engine von `aud_audio_plugin` - Parameter, Werks-Presets, `fullState`
+  mit den Einstellungen des Editors, deren Änderung den Host benachrichtigt,
+  MIDI und Transport des Hosts, Offline-Rendering, die Noten des Editors
+  als MIDI-Ausgang „MIDI Out" und eine Render-Messung alle 2 s im
+  Systemprotokoll.
 - **Der Editor** (`src/aud_auv3_view_controller.mm`,
   `src/aud_auv3_editor_bridge.h`): Flutter innerhalb der Erweiterung, das
   mit `dart:ffi` (`src/aud_auv3_editor_api.h`) im Shell-Protokoll von
@@ -42,7 +45,8 @@ node scripts/host.js --sign "<identity>" --validate
 macOS, registriert sie und startet den Test-Host
 `test/host/aud_auv3_host.swift`, der die Unit wie Logic Pro außerhalb des
 eigenen Prozesses lädt: Presets, Rendering, Zustand, zwei Instanzen,
-Echtzeit-Blöcke und der Editor; `--validate` startet zusätzlich `auval`.
+Echtzeit-Blöcke, der MIDI-Ausgang und der Editor; `--validate` startet
+zusätzlich `auval`, `--play <Sekunden>` spielt live im Echtzeit-Modus.
 
 Auf iOS: `node scripts/build-plugin.js --config example/plugin/plugin.json
 --platform ios`, dann `example/ios` mit Xcode bauen und installieren; ihre

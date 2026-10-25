@@ -18,6 +18,8 @@
       "aud_audio_graph": "package dependency; the headless host in C",
       "aud_audio_core": "package dependency; the ABI headers, the SPSC ring"
     },
-    "usedBy": {}
+    "usedBy": {
+      "audanika_app": "the AUv3 extension of the app on macOS and iOS: build-plugin.js, the static library, AudAuv3Shell in its editor"
+    }
   }
 }
