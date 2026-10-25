@@ -16,10 +16,9 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
-		AD5E0A000000000000000011 /* AudSpikeAudioUnit.mm in Sources */ = {isa = PBXBuildFile; fileRef = AD5E0A000000000000000002 /* AudSpikeAudioUnit.mm */; };
-		AD5E0A000000000000000012 /* AudSpikeViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = AD5E0A000000000000000004 /* AudSpikeViewController.mm */; };
-		AD5E0A000000000000000013 /* AudSpikeAU.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AD5E0A000000000000000006 /* AudSpikeAU.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AD5E0A000000000000000013 /* AudExampleAU.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AD5E0A000000000000000006 /* AudExampleAU.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AD5E0A000000000000000014 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = AD5E0A000000000000000031 /* FlutterGeneratedPluginSwiftPackage */; };
+		F76DD94656CC37AFE66F0164 /* anchor.m in Sources */ = {isa = PBXBuildFile; fileRef = BA426BF40F90573298CFDF21 /* anchor.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,7 +34,7 @@
 			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = AD5E0A000000000000000041;
-			remoteInfo = AudSpikeAU;
+			remoteInfo = AudExampleAU;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -56,7 +55,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				AD5E0A000000000000000013 /* AudSpikeAU.appex in Embed Foundation Extensions */,
+				AD5E0A000000000000000013 /* AudExampleAU.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -74,6 +73,7 @@
 		7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterGeneratedPluginSwiftPackage; path = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
+		7CF2E1B5208B6203E587EEEB /* AudExampleAU.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = AudExampleAU.xcconfig; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
 		97C146EE1CF9000F007C117D /* Runner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Runner.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -81,13 +81,9 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		AD5E0A000000000000000001 /* AudSpikeAudioUnit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudSpikeAudioUnit.h; sourceTree = "<group>"; };
-		AD5E0A000000000000000002 /* AudSpikeAudioUnit.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AudSpikeAudioUnit.mm; sourceTree = "<group>"; };
-		AD5E0A000000000000000003 /* AudSpikeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudSpikeViewController.h; sourceTree = "<group>"; };
-		AD5E0A000000000000000004 /* AudSpikeViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AudSpikeViewController.mm; sourceTree = "<group>"; };
-		AD5E0A000000000000000005 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		AD5E0A000000000000000006 /* AudSpikeAU.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AudSpikeAU.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		AD5E0A000000000000000006 /* AudExampleAU.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AudExampleAU.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD5E0A00000000000000009A /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
+		BA426BF40F90573298CFDF21 /* anchor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = anchor.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,7 +133,7 @@
 				97C146F01CF9000F007C117D /* Runner */,
 				97C146EF1CF9000F007C117D /* Products */,
 				331C8082294A63A400263BE5 /* RunnerTests */,
-				AD5E0A000000000000000021 /* AudSpikeAU */,
+				AC56D7153E3DFA948F4EC86A /* AudExampleAU */,
 			);
 			sourceTree = "<group>";
 		};
@@ -146,7 +142,7 @@
 			children = (
 				97C146EE1CF9000F007C117D /* Runner.app */,
 				331C8081294A63A400263BE5 /* RunnerTests.xctest */,
-				AD5E0A000000000000000006 /* AudSpikeAU.appex */,
+				AD5E0A000000000000000006 /* AudExampleAU.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -168,16 +164,14 @@
 			path = Runner;
 			sourceTree = "<group>";
 		};
-		AD5E0A000000000000000021 /* AudSpikeAU */ = {
+		AC56D7153E3DFA948F4EC86A /* AudExampleAU */ = {
 			isa = PBXGroup;
 			children = (
-				AD5E0A000000000000000001 /* AudSpikeAudioUnit.h */,
-				AD5E0A000000000000000002 /* AudSpikeAudioUnit.mm */,
-				AD5E0A000000000000000003 /* AudSpikeViewController.h */,
-				AD5E0A000000000000000004 /* AudSpikeViewController.mm */,
-				AD5E0A000000000000000005 /* Info.plist */,
+				BA426BF40F90573298CFDF21 /* anchor.m */,
+				7CF2E1B5208B6203E587EEEB /* AudExampleAU.xcconfig */,
 			);
-			path = AudSpikeAU;
+			name = AudExampleAU;
+			path = AudExampleAU;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -211,6 +205,7 @@
 				97C146EC1CF9000F007C117D /* Resources */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
+				532D3B6B2B2B794C0790FE85 /* Put the Dart code into the extension */,
 			);
 			buildRules = (
 			);
@@ -225,24 +220,25 @@
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
 			productType = "com.apple.product-type.application";
 		};
-		AD5E0A000000000000000041 /* AudSpikeAU */ = {
+		AD5E0A000000000000000041 /* AudExampleAU */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AD5E0A000000000000000051 /* Build configuration list for PBXNativeTarget "AudSpikeAU" */;
+			buildConfigurationList = AD5E0A000000000000000051 /* Build configuration list for PBXNativeTarget "AudExampleAU" */;
 			buildPhases = (
 				AD5E0A000000000000000061 /* Sources */,
 				AD5E0A000000000000000062 /* Frameworks */,
 				AD5E0A000000000000000063 /* Resources */,
+				E8DB4129A55D2DA4C83B4B6E /* Copy the plugin configuration */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = AudSpikeAU;
+			name = AudExampleAU;
 			packageProductDependencies = (
 				AD5E0A000000000000000031 /* FlutterGeneratedPluginSwiftPackage */,
 			);
-			productName = AudSpikeAU;
-			productReference = AD5E0A000000000000000006 /* AudSpikeAU.appex */;
+			productName = AudExampleAU;
+			productReference = AD5E0A000000000000000006 /* AudExampleAU.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -259,12 +255,12 @@
 						CreatedOnToolsVersion = 14.0;
 						TestTargetID = 97C146ED1CF9000F007C117D;
 					};
-					AD5E0A000000000000000041 = {
-						CreatedOnToolsVersion = 16.0;
-					};
 					97C146ED1CF9000F007C117D = {
 						CreatedOnToolsVersion = 7.3.1;
 						LastSwiftMigration = 1100;
+					};
+					AD5E0A000000000000000041 = {
+						CreatedOnToolsVersion = 16.0;
 					};
 				};
 			};
@@ -278,7 +274,7 @@
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			packageReferences = (
-				781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */,
+				781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "FlutterGeneratedPluginSwiftPackage" */,
 			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
@@ -286,7 +282,7 @@
 			targets = (
 				97C146ED1CF9000F007C117D /* Runner */,
 				331C8080294A63A400263BE5 /* RunnerTests */,
-				AD5E0A000000000000000041 /* AudSpikeAU */,
+				AD5E0A000000000000000041 /* AudExampleAU */,
 			);
 		};
 /* End PBXProject section */
@@ -336,6 +332,24 @@
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin";
 		};
+		532D3B6B2B2B794C0790FE85 /* Put the Dart code into the extension */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Put the Dart code into the extension";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\n# The editor runs the app's Dart code inside the extension, which may\n# read only its own bundle (plugin-012).\nAPPEX=\"$TARGET_BUILD_DIR/$WRAPPER_NAME/PlugIns/AudExampleAU.appex\"\nmkdir -p \"$APPEX/Frameworks\"\nrsync -a --delete \"$TARGET_BUILD_DIR/$WRAPPER_NAME/Frameworks/App.framework/\" \"$APPEX/Frameworks/App.framework/\"\nif [ -n \"$EXPANDED_CODE_SIGN_IDENTITY\" ]; then\n  codesign --force --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" \"$APPEX/Frameworks/App.framework\"\n  codesign --force --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" --preserve-metadata=identifier,entitlements \"$APPEX\"\nfi\n";
+		};
 		9740EEB61CF901F6004384FC /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -350,6 +364,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build";
+		};
+		E8DB4129A55D2DA4C83B4B6E /* Copy the plugin configuration */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy the plugin configuration";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\nrsync -a --delete \"$AUD_AUV3_PLUGIN_FOLDER/\" \"$TARGET_BUILD_DIR/$WRAPPER_NAME/aud_plugin/\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -376,8 +408,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AD5E0A000000000000000011 /* AudSpikeAudioUnit.mm in Sources */,
-				AD5E0A000000000000000012 /* AudSpikeViewController.mm in Sources */,
+				F76DD94656CC37AFE66F0164 /* anchor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -391,7 +422,7 @@
 		};
 		AD5E0A000000000000000081 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = AD5E0A000000000000000041 /* AudSpikeAU */;
+			target = AD5E0A000000000000000041 /* AudExampleAU */;
 			targetProxy = AD5E0A000000000000000082 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -475,10 +506,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = SAZSC68S46;
 				ENABLE_BITCODE = NO;
-				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -658,10 +689,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = SAZSC68S46;
 				ENABLE_BITCODE = NO;
-				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -682,10 +713,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = SAZSC68S46;
 				ENABLE_BITCODE = NO;
-				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -701,43 +732,19 @@
 		};
 		AD5E0A000000000000000052 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
+			baseConfigurationReference = 7CF2E1B5208B6203E587EEEB /* AudExampleAU.xcconfig */;
 			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = SAZSC68S46;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../src";
-				INFOPLIST_FILE = AudSpikeAU/Info.plist;
+				GENERATE_INFOPLIST_FILE = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../../build/ios/$(PLATFORM_NAME)";
-				MARKETING_VERSION = 1.0;
-				OTHER_LDFLAGS = (
-					"-laud_auv3_engine",
-					"-lc++",
-					"-framework",
-					CoreAudioKit,
-					"-framework",
-					AudioToolbox,
-					"-framework",
-					AVFoundation,
-					"-framework",
-					QuartzCore,
-					"-framework",
-					Flutter,
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.audanika.audAudioAuv3.AudSpikeAU;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = AudExampleAU;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -747,43 +754,19 @@
 		};
 		AD5E0A000000000000000053 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
+			baseConfigurationReference = 7CF2E1B5208B6203E587EEEB /* AudExampleAU.xcconfig */;
 			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = SAZSC68S46;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_OPTIMIZATION_LEVEL = s;
-				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../src";
-				INFOPLIST_FILE = AudSpikeAU/Info.plist;
+				GENERATE_INFOPLIST_FILE = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../../build/ios/$(PLATFORM_NAME)";
-				MARKETING_VERSION = 1.0;
-				OTHER_LDFLAGS = (
-					"-laud_auv3_engine",
-					"-lc++",
-					"-framework",
-					CoreAudioKit,
-					"-framework",
-					AudioToolbox,
-					"-framework",
-					AVFoundation,
-					"-framework",
-					QuartzCore,
-					"-framework",
-					Flutter,
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.audanika.audAudioAuv3.AudSpikeAU;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = AudExampleAU;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -793,43 +776,19 @@
 		};
 		AD5E0A000000000000000054 /* Profile */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
+			baseConfigurationReference = 7CF2E1B5208B6203E587EEEB /* AudExampleAU.xcconfig */;
 			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = SAZSC68S46;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_OPTIMIZATION_LEVEL = s;
-				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../src";
-				INFOPLIST_FILE = AudSpikeAU/Info.plist;
+				GENERATE_INFOPLIST_FILE = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../../build/ios/$(PLATFORM_NAME)";
-				MARKETING_VERSION = 1.0;
-				OTHER_LDFLAGS = (
-					"-laud_auv3_engine",
-					"-lc++",
-					"-framework",
-					CoreAudioKit,
-					"-framework",
-					AudioToolbox,
-					"-framework",
-					AVFoundation,
-					"-framework",
-					QuartzCore,
-					"-framework",
-					Flutter,
-				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.audanika.audAudioAuv3.AudSpikeAU;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = AudExampleAU;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -870,7 +829,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AD5E0A000000000000000051 /* Build configuration list for PBXNativeTarget "AudSpikeAU" */ = {
+		AD5E0A000000000000000051 /* Build configuration list for PBXNativeTarget "AudExampleAU" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AD5E0A000000000000000052 /* Debug */,
@@ -883,7 +842,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */ = {
+		781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "FlutterGeneratedPluginSwiftPackage" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage;
 		};

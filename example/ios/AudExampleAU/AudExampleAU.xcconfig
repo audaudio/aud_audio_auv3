@@ -1,0 +1,8 @@
+// The build settings of the example's extension target: those of
+// aud_audio_auv3's build (node scripts/build-plugin.js --platform ios), and
+// the versions of the app, which an extension must share with it.
+#include "../Flutter/Generated.xcconfig"
+#include "../../../build/auv3/AudAuv3.xcconfig"
+
+MARKETING_VERSION = $(FLUTTER_BUILD_NAME)
+CURRENT_PROJECT_VERSION = $(FLUTTER_BUILD_NUMBER)

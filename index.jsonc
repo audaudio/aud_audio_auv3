@@ -6,16 +6,17 @@
 
 {
   "name": "aud_audio_auv3",
-  "summary": "Audio Unit v3 extension of the Audanika Audio Engine over its headless host.",
+  "summary": "Audio Unit v3 shell of the Audanika Audio Engine over its headless host, on macOS and iOS.",
   "domain": [
-    "AUv3 shell over the headless host (S20); spike S0-plugin-ui: engine C API, static library for iOS",
-    "Example: container app and AUv3 extension with ballast and Flutter editor from a FlutterEngineGroup (plugin-003)"
+    "AUv3 shell (S20, plugin-011) on the shared core of aud_audio_plugin: parameters, factory presets, fullState, host MIDI 1.0 and UMP, musical context and transport, offline rendering, sample cache budget per platform",
+    "Editor inside the extension (plugin-012): the app's Flutter code at an entry point, FlutterEngineGroup on iOS, the shell protocol through dart:ffi (AudAuv3Shell)",
+    "Build of a static library per platform, the extension's Info.plist and an xcconfig for an app's extension target without code; example app for macOS and iOS, test host, auval"
   ],
   "interfaces": {
     "uses": {
+      "aud_audio_plugin": "package dependency; the engine, settings, state, transport, MIDI events, content lookup, plugin-build.js, the shell protocol's messages",
       "aud_audio_graph": "package dependency; the headless host in C",
-      "aud_audio_core": "package dependency",
-      "aud_audio_ui_controls": "the editor's knobs and parameter binding"
+      "aud_audio_core": "package dependency; the ABI headers, the SPSC ring"
     },
     "usedBy": {}
   }

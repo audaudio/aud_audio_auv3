@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "name": "Aud Example",
+  "vendor": "Audanika",
+  "version": "0.2.0",
+  "bundleId": "io.audaudio.auv3.example",
+  "packages": [],
+  "document": "document.json",
+  "presets": "presets.json",
+  "parameters": [
+    {
+      "node": "filter",
+      "param": "cutoff",
+      "name": "Cutoff"
+    },
+    {
+      "node": "out",
+      "param": "master",
+      "name": "Volume"
+    }
+  ],
+  "controls": [
+    {
+      "id": "slider",
+      "name": "Slider",
+      "channel": 0,
+      "cc": 74,
+      "default": 0.5
+    }
+  ],
+  "auv3": {
+    "type": "aumu",
+    "subtype": "AExm",
+    "manufacturer": "Audn",
+    "description": "The example of aud_audio_auv3",
+    "tags": [
+      "Synthesizer"
+    ],
+    "cacheBudgetMB": {
+      "macos": 256,
+      "ios": 96
+    },
+    "editorEntrypoint": "auv3EditorMain"
+  }
+}
