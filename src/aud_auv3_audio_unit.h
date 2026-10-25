@@ -4,7 +4,7 @@
 // Use of this source code is governed by terms that can be
 // found in the LICENSE file in the root of this package.
 
-// The Audio Unit of the AUv3 shell (ticket 41, plugin-011): the engine of
+// The Audio Unit of the AUv3 shell (ticket 64, plugin-011): the engine of
 // aud_audio_plugin with the graph document, presets and node packages an
 // app configures in the extension's aud_plugin folder (plugin.json,
 // document.json, presets.json), its content found through plugin.json

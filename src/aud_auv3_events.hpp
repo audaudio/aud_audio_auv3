@@ -5,7 +5,7 @@
 // found in the LICENSE file in the root of this package.
 
 // What an Audio Unit host hands the render block, as the graph takes it
-// (ticket 41): the sample offset of an event in the block, MIDI 1.0
+// (ticket 64): the sample offset of an event in the block, MIDI 1.0
 // messages and UMP packets as events on the graph's event input (port 0),
 // and the host's musical context and transport state as the host transport
 // of aud_audio_plugin; and what the render block hands the host's MIDI

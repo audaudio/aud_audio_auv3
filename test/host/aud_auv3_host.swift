@@ -4,7 +4,7 @@
 // Use of this source code is governed by terms that can be
 // found in the LICENSE file in the root of this package.
 
-// The test host of the AUv3 shell (ticket 41), as Logic Pro loads a unit:
+// The test host of the AUv3 shell (ticket 64), as Logic Pro loads a unit:
 // it finds the component, loads it out of process and checks the preset
 // parameter and the factory presets, every preset sounding offline with a
 // note on each of the MIDI channels 1 to 4, the state round trip with a

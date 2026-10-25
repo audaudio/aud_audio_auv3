@@ -4,7 +4,7 @@ Audio Unit v3 shell of the Audanika Audio Engine over its headless host.
 
 Part of the Audanika Audio Engine; planned in [aud_audio_pm](https://github.com/audaudio/aud_audio_pm).
 
-## What the package holds (ticket 41)
+## What the package holds (ticket 64)
 
 The AUv3 shell (step S20) on macOS and iOS: an app configures it with a
 `plugin.json`, a graph document and its presets and gets an Audio Unit

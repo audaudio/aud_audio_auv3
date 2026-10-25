@@ -4,7 +4,7 @@
 // Use of this source code is governed by terms that can be
 // found in the LICENSE file in the root of this package.
 
-// What scripts/build-plugin.js sets per build (ticket 41); the defaults
+// What scripts/build-plugin.js sets per build (ticket 64); the defaults
 // below serve the native tests.
 //
 // - AUD_AUV3_CACHE_BUDGET_MB: the sample cache budget of the extension

@@ -4,7 +4,7 @@
 // Use of this source code is governed by terms that can be
 // found in the LICENSE file in the root of this package.
 
-// Builds the AUv3 of an app from its plugin.json (ticket 41, plugin-011,
+// Builds the AUv3 of an app from its plugin.json (ticket 64, plugin-011,
 // doc/plugin-bundle.md) with clang, without CMake: the shared core of
 // aud_audio_plugin, the graph engine, the node packages plugin.json names
 // and the shell, compiled by aud_audio_plugin's scripts/plugin-build.js

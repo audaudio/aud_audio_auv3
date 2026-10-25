@@ -4,7 +4,7 @@
 // Use of this source code is governed by terms that can be
 // found in the LICENSE file in the root of this package.
 
-// Builds and runs the native unit tests of test/native (ticket 41) with the
+// Builds and runs the native unit tests of test/native (ticket 64) with the
 // compile settings of aud_audio_plugin's scripts/plugin-build.js: every
 // test is linked with the sources it covers into an executable under
 // .dart_tool/auv3-build/test, which runs its tests and reports the

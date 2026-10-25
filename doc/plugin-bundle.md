@@ -1,7 +1,7 @@
 # The AUv3 of an app
 
 What an app hands `aud_audio_auv3` to build an Audio Unit v3 of its own
-(ticket 41, plugin-011): one configuration, one graph document and its
+(ticket 64, plugin-011): one configuration, one graph document and its
 presets. The shell is generic; everything that makes the unit an instrument
 of the app lives in these three files. `aud_audio_plugin` reads them; its
 `doc/plugin-config.md` describes the keys every shell shares, this file adds

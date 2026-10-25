@@ -10,7 +10,7 @@ import 'package:aud_audio_auv3/aud_audio_auv3.dart';
 import 'package:flutter/widgets.dart';
 
 // #############################################################################
-/// The container app of the example AUv3 (ticket 41): the app only carries
+/// The container app of the example AUv3 (ticket 64): the app only carries
 /// the extension, which the system registers with it; the unit plays in a
 /// host such as Logic Pro, GarageBand or Loopy Pro.
 void main() {

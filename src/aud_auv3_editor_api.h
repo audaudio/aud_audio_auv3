@@ -5,7 +5,7 @@
 // found in the LICENSE file in the root of this package.
 
 // The C interface between the unit and its editor inside the extension
-// (ticket 41, plugin-012), for dart:ffi: the editor's Dart code and the
+// (ticket 64, plugin-012), for dart:ffi: the editor's Dart code and the
 // unit share the extension's process, so the messages of the shell
 // protocol (aud_audio_plugin's AudShellMessage as JSON text) travel by
 // function call instead of a socket or a platform channel. The extension's

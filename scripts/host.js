@@ -6,7 +6,7 @@
 
 // Builds the example's container app with its AUv3 (scripts/build-plugin.js
 // --appex), registers the extension with the system and runs the test host
-// test/host/aud_auv3_host.swift on it (ticket 41): the host loads the unit
+// test/host/aud_auv3_host.swift on it (ticket 64): the host loads the unit
 // out of process as Logic Pro does. With --validate it runs Apple's
 // auval as well, with --play it plays live for that many seconds. macOS
 // only.

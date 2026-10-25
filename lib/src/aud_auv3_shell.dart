@@ -26,7 +26,7 @@ typedef _FreeDart = void Function(Pointer<Utf8>);
 
 // #############################################################################
 /// The editor's end of the shell protocol inside the AUv3 extension
-/// (ticket 41, plugin-012): the editor's Dart code and the unit share the
+/// (ticket 64, plugin-012): the editor's Dart code and the unit share the
 /// extension's process, so [AudShellMessage]s travel as JSON through the C
 /// functions of `src/aud_auv3_editor_api.h`, called with `dart:ffi`. The
 /// extension starts the editor with the argument `--aud-auv3-instance=<n>`

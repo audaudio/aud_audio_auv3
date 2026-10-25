@@ -4,7 +4,7 @@ Audio-Unit-v3-Hülle der Audanika Audio Engine über ihrem Headless-Host.
 
 Teil der Audanika Audio Engine; geplant in [aud_audio_pm](https://github.com/audaudio/aud_audio_pm).
 
-## Was das Paket enthält (Ticket 41)
+## Was das Paket enthält (Ticket 64)
 
 Die AUv3-Hülle (Schritt S20) auf macOS und iOS: Eine App konfiguriert sie
 mit einer `plugin.json`, einem Graph-Dokument und dessen Presets und erhält

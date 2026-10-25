@@ -5,7 +5,7 @@
 // found in the LICENSE file in the root of this package.
 
 // The unit's end of the shell protocol for an editor inside the extension
-// (ticket 41, plugin-012): the messages of aud_audio_plugin's
+// (ticket 64, plugin-012): the messages of aud_audio_plugin's
 // AudShellMessage as JSON, carried in process through the C interface of
 // aud_auv3_editor_api.h, which the editor's Dart code calls with dart:ffi.
 // Each bridge has an instance number, which the view controller hands the
