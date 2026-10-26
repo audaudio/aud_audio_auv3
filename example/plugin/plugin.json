@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "name": "Aud Example",
-  "vendor": "Audanika",
+  "vendor": "audaudio",
   "version": "0.2.0",
   "bundleId": "io.audaudio.auv3.example",
   "packages": [],
@@ -31,7 +31,7 @@
   "auv3": {
     "type": "aumu",
     "subtype": "AExm",
-    "manufacturer": "Audn",
+    "manufacturer": "Demo",
     "description": "The example of aud_audio_auv3",
     "tags": [
       "Synthesizer"

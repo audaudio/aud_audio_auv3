@@ -1,4 +1,4 @@
-package com.audanika.aud_audio_auv3
+package io.audaudio.auv3.example
 
 import io.flutter.embedding.android.FlutterActivity
 

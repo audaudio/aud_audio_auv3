@@ -16,7 +16,7 @@ section:
 {
   "schema": 1,
   "name": "Aud Example",               // the unit's name in a host
-  "vendor": "Audanika",                // shown as "<vendor>: <name>"
+  "vendor": "audaudio",                // shown as "<vendor>: <name>"
   "version": "0.2.0",                  // the AudioComponents version
   "bundleId": "io.audaudio.auv3.example", // the subsystem of the unit's log
   "packages": [],
@@ -32,7 +32,7 @@ section:
     // never change; Apple reserves codes of lower-case letters only.
     "type": "aumu",
     "subtype": "AExm",
-    "manufacturer": "Audn",
+    "manufacturer": "Demo",
     "description": "The example of aud_audio_auv3",
     "tags": ["Synthesizer"],
     // The sample cache of the extension process, shared by all instances

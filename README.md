@@ -45,8 +45,10 @@ instances, realtime blocks, the MIDI output and the editor; `--validate`
 runs `auval` too, `--play <seconds>` plays live in the realtime mode.
 
 On iOS: `node scripts/build-plugin.js --config example/plugin/plugin.json
---platform ios`, then build and install `example/ios` with Xcode; its App
-ID needs the Inter-App Audio capability.
+--platform ios`, then build and install `example/ios` with Xcode under
+your own team - the project names none, e.g. `xcodebuild …
+DEVELOPMENT_TEAM=<team>`; its App ID needs the Inter-App Audio
+capability.
 
 Flutter (BSD-3-Clause) travels in the extension; `flutter build` writes its
 notices and those of every Dart package into
