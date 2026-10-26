@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1 - 2026-10-26
+
+### Changed
+
+- Take the iOS editor's Dart code from the app's Frameworks
+
 ## 0.2.0 - 2026-10-26
 
 ### Added

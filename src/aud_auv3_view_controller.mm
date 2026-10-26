@@ -5,9 +5,10 @@
 // found in the LICENSE file in the root of this package.
 
 // The editor runs Flutter inside the extension (plugin-012): the app's own
-// Dart code, from the Dart bundle the extension carries in its Frameworks
-// (the App Sandbox lets it read its own bundle, not the app around it),
-// started at the entry point the extension's Info.plist names as
+// Dart code - on macOS from the Dart bundle the extension carries in its
+// Frameworks (the App Sandbox lets it read its own bundle, not the app
+// around it), on iOS from the app's Frameworks, as Flutter itself (an iOS
+// extension may carry no frameworks of its own) -, started at the entry point the extension's Info.plist names as
 // AudAuv3EditorEntrypoint when the view first appears, with the argument
 // `--aud-auv3-instance=<n>` of its bridge. On iOS the engines of all
 // instances come from one FlutterEngineGroup per process; on macOS each
@@ -38,14 +39,16 @@ NSString* editorEntrypoint() {
   return [value isKindOfClass:[NSString class]] && [value length] > 0 ? value : nil;
 }
 
-// The Dart bundle inside the extension.
+// The Dart bundle: inside the extension on macOS, in the app around it on
+// iOS (<app>/PlugIns/<extension>.appex).
 NSBundle* dartBundle() {
 #if TARGET_OS_OSX
   NSString* path = @"Contents/Frameworks/App.framework";
 #else
-  NSString* path = @"Frameworks/App.framework";
+  NSString* path = @"../../Frameworks/App.framework";
 #endif
-  return [NSBundle bundleWithURL:[[NSBundle mainBundle].bundleURL URLByAppendingPathComponent:path]];
+  NSURL* url = [[NSBundle mainBundle].bundleURL URLByAppendingPathComponent:path];
+  return [NSBundle bundleWithURL:url.URLByStandardizingPath];
 }
 
 NSArray<NSString*>* editorArguments(AudAuv3EditorBridge* bridge) {
