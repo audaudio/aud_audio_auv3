@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- Take the iOS editor's Dart code from the app's Frameworks
+
 ## 0.2.0 - 2026-10-26
 
 ### Added
@@ -55,6 +61,7 @@
 - End a run whose instantiation fails; harden build-engine.js
 
 - Test audParamId with fixed vectors and document it in both READMEs
+
 
 ## 0.0.2 - 2026-10-08
 

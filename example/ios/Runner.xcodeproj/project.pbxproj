@@ -205,7 +205,6 @@
 				97C146EC1CF9000F007C117D /* Resources */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
-				532D3B6B2B2B794C0790FE85 /* Put the Dart code into the extension */,
 			);
 			buildRules = (
 			);
@@ -331,24 +330,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin";
-		};
-		532D3B6B2B2B794C0790FE85 /* Put the Dart code into the extension */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Put the Dart code into the extension";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "set -e\n# The editor runs the app's Dart code inside the extension, which may\n# read only its own bundle (plugin-012).\nAPPEX=\"$TARGET_BUILD_DIR/$WRAPPER_NAME/PlugIns/AudExampleAU.appex\"\nmkdir -p \"$APPEX/Frameworks\"\nrsync -a --delete \"$TARGET_BUILD_DIR/$WRAPPER_NAME/Frameworks/App.framework/\" \"$APPEX/Frameworks/App.framework/\"\nif [ -n \"$EXPANDED_CODE_SIGN_IDENTITY\" ]; then\n  codesign --force --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" \"$APPEX/Frameworks/App.framework\"\n  codesign --force --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" --preserve-metadata=identifier,entitlements \"$APPEX\"\nfi\n";
 		};
 		9740EEB61CF901F6004384FC /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;

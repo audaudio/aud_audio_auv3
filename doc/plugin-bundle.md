@@ -88,10 +88,13 @@ CURRENT_PROJECT_VERSION = $(FLUTTER_BUILD_NUMBER)
 - The app target embeds the extension in a phase "Embed Foundation
   Extensions" that comes before Flutter's own run script, or Xcode reports
   a cycle.
-- The app target copies its `App.framework` into the extension's
-  `Frameworks` after Flutter embedded it and signs the framework and the
-  extension again: the editor runs the app's Dart code inside the
-  extension.
+- On macOS the app target copies its `App.framework` into the
+  extension's `Frameworks` after Flutter embedded it and signs the
+  framework and the extension again: the App Sandbox lets the extension
+  read only its own bundle. On iOS the extension takes the app's
+  `App.framework` from the app's `Frameworks`, as it takes Flutter: the
+  App Store refuses an iOS extension with a `Frameworks` folder of its own
+  (ITMS-90206).
 - On iOS the app's App ID carries the Inter-App Audio capability: without
   it the system does not register the extension.
 - The extension and the app share a team: the extension runs with the
