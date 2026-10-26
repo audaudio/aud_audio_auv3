@@ -317,6 +317,24 @@ if let second {
   report("twoInstances", false)
 }
 
+// A project restored keeps an untouched control untouched: the base class
+// sets every parameter of the tree again, which must not move it.
+if let second {
+  let controlsOf = { (state: [String: Any]?) -> [String: Any] in
+    guard let text = state?["aud_state"] as? String,
+          let json = try? JSONSerialization.jsonObject(with: Data(text.utf8)) as? [String: Any]
+    else { return ["missing": true] }
+    return json["controls"] as? [String: Any] ?? [:]
+  }
+  let saved = second.auAudioUnit.fullState
+  let before = controlsOf(saved)
+  second.auAudioUnit.fullState = saved
+  wait(1) { false }
+  let after = controlsOf(second.auAudioUnit.fullState)
+  report("untouchedControl", before.isEmpty && after.isEmpty,
+         ["before": before.count, "after": after.count])
+}
+
 // .............................................................................
 // Editor
 
@@ -334,6 +352,7 @@ if let controller {
   window.orderFrontRegardless()
   wait(editorSeconds) { false }
   var fields: [String: Any] = ["size": "\(controller.preferredContentSize)"]
+  var editorOk = true
   if let tap, let renderer = try? Renderer([unit], frames: 512) {
     _ = try? renderer.render(94, frames: 512)  // the host's notes fade
     let silence = (try? renderer.render(20, frames: 512)) ?? -1
@@ -364,7 +383,7 @@ if let controller {
     renderer.close()
     fields["tapPeak"] = peak
     fields["silenceBefore"] = silence
-    if !(peak > 0.001 && peak > silence * 2) { failed = true }
+    editorOk = peak > 0.001 && peak > silence * 2
   }
   if let snapshot {
     // The window shows another process's view: only the window server
@@ -376,7 +395,7 @@ if let controller {
     capture.waitUntilExit()
     fields["snapshot"] = snapshot
   }
-  report("editor", true, fields)
+  report("editor", editorOk, fields)
   window.close()
 } else {
   report("editor", false)

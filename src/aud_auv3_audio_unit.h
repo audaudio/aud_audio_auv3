@@ -39,8 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // .............................................................................
 // [main] Plays a MIDI 1.0 channel voice message of the editor at the start
-// of the next block.
-- (void)playEditorStatus:(uint8_t)status data1:(uint8_t)data1 data2:(uint8_t)data2;
+// of the next block; NO when the queue is full because no block renders.
+- (BOOL)playEditorStatus:(uint8_t)status data1:(uint8_t)data1 data2:(uint8_t)data2;
 
 // .............................................................................
 // [main] The settings of the editor as the editor wrote them; kept with the
@@ -50,8 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy) NSString* editorSettings;
 
 // .............................................................................
-// The names of the presets, in the order of the factory presets.
-@property(nonatomic, readonly) NSArray<NSString*>* presetNames;
+// The ids of the presets in presets.json, in the order of the factory
+// presets.
+@property(nonatomic, readonly) NSArray<NSString*>* presetIds;
 
 // .............................................................................
 // The index of the preset that plays; KVO-observable on the main thread.

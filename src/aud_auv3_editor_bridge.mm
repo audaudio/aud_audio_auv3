@@ -49,6 +49,8 @@ std::atomic<int64_t> nextInstance{1};
   int64_t _instance;
   // The notes the editor holds: channel and pitch.
   std::set<std::pair<uint8_t, uint8_t>> _held;
+  // The editor's messages the unit had no room for.
+  uint64_t _dropped;
   NSDate* _start;
   NSTimeInterval _helloAfter;
   BOOL _welcomed;
@@ -151,7 +153,9 @@ std::atomic<int64_t> nextInstance{1};
   }
   NSMutableArray* presets = [NSMutableArray array];
   for (AUAudioUnitPreset* preset in unit.factoryPresets) {
-    [presets addObject:@{@"id" : @(preset.number).stringValue, @"name" : preset.name}];
+    const NSInteger index = preset.number;
+    NSString* presetId = index < unit.presetIds.count ? unit.presetIds[index] : @(index).stringValue;
+    [presets addObject:@{@"id" : presetId, @"name" : preset.name}];
   }
   [self send:@{
     @"type" : @"welcome",
@@ -182,14 +186,22 @@ std::atomic<int64_t> nextInstance{1};
     const uint8_t data1 = static_cast<uint8_t>([bytes[at + 1] unsignedIntValue] & 0x7F);
     const uint8_t data2 =
         data > 1 ? static_cast<uint8_t>([bytes[at + 2] unsignedIntValue] & 0x7F) : 0;
+    at += 1 + data;
+    // Without a rendering block the queue fills: a dropped note is no held
+    // one.
+    if (![unit playEditorStatus:status data1:data1 data2:data2]) {
+      if (_dropped++ % 100 == 0) {
+        logError("The unit takes no notes of the editor of instance " +
+                 std::to_string(_instance) + ": " + std::to_string(_dropped) + " dropped");
+      }
+      continue;
+    }
     const uint8_t channel = status & 0x0F;
     if ((status & 0xF0) == 0x90 && data2 > 0) {
       _held.insert({channel, data1});
     } else if ((status & 0xF0) == 0x80 || (status & 0xF0) == 0x90) {
       _held.erase({channel, data1});
     }
-    [unit playEditorStatus:status data1:data1 data2:data2];
-    at += 1 + data;
   }
 }
 
@@ -198,7 +210,7 @@ std::atomic<int64_t> nextInstance{1};
   _ended = YES;
   AudAuv3AudioUnit* unit = _unit;
   for (const auto& [channel, pitch] : _held) {
-    [unit playEditorStatus:static_cast<uint8_t>(0x80 | channel) data1:pitch data2:0];
+    (void)[unit playEditorStatus:static_cast<uint8_t>(0x80 | channel) data1:pitch data2:0];
   }
   _held.clear();
   std::lock_guard<std::mutex> lock(registryMutex());

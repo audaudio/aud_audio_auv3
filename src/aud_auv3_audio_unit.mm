@@ -166,6 +166,7 @@ void sendMidi(const RenderState& state, const EditorMidi& midi,
   NSArray<AUAudioUnitPreset*>* _factoryPresets;
   AUAudioUnitPreset* _currentPreset;
   NSArray<NSString*>* _presetNames;
+  NSArray<NSString*>* _presetIds;
   NSString* _editorSettings;
 }
 
@@ -257,6 +258,7 @@ void sendMidi(const RenderState& state, const EditorMidi& midi,
 - (void)makePresets {
   NSMutableArray<AUAudioUnitPreset*>* presets = [NSMutableArray array];
   NSMutableArray<NSString*>* names = [NSMutableArray array];
+  NSMutableArray<NSString*>* ids = [NSMutableArray array];
   NSInteger number = 0;
   for (const ShellPreset& shellPreset : _settings.presets) {
     AUAudioUnitPreset* preset = [[AUAudioUnitPreset alloc] init];
@@ -264,9 +266,11 @@ void sendMidi(const RenderState& state, const EditorMidi& midi,
     preset.name = @(shellPreset.name.c_str());
     [presets addObject:preset];
     [names addObject:preset.name];
+    [ids addObject:@(shellPreset.id.c_str())];
   }
   _factoryPresets = presets;
   _presetNames = names;
+  _presetIds = ids;
   _currentPreset = presets.count > _settings.defaultPreset ? presets[_settings.defaultPreset] : nil;
 }
 
@@ -404,8 +408,8 @@ void sendMidi(const RenderState& state, const EditorMidi& midi,
   return _preset.load();
 }
 
-- (NSArray<NSString*>*)presetNames {
-  return _presetNames;
+- (NSArray<NSString*>*)presetIds {
+  return _presetIds;
 }
 
 - (NSString*)editorSettings {
@@ -430,8 +434,8 @@ void sendMidi(const RenderState& state, const EditorMidi& midi,
   logInfo("The editor's settings changed: " + std::to_string(bytes) + " bytes");
 }
 
-- (void)playEditorStatus:(uint8_t)status data1:(uint8_t)data1 data2:(uint8_t)data2 {
-  _render->editorMidi.push({status, data1, data2});
+- (BOOL)playEditorStatus:(uint8_t)status data1:(uint8_t)data1 data2:(uint8_t)data2 {
+  return _render->editorMidi.push({status, data1, data2});
 }
 
 // .............................................................................
@@ -459,6 +463,12 @@ void sendMidi(const RenderState& state, const EditorMidi& midi,
 
 - (NSArray<AUAudioUnitPreset*>*)factoryPresets {
   return _factoryPresets;
+}
+
+// presetApplied: tells the observers of currentPreset once the preset
+// applied, also for the host's own setCurrentPreset:.
++ (BOOL)automaticallyNotifiesObserversOfCurrentPreset {
+  return NO;
 }
 
 - (AUAudioUnitPreset*)currentPreset {
@@ -508,8 +518,13 @@ void sendMidi(const RenderState& state, const EditorMidi& midi,
 }
 
 - (void)setFullState:(NSDictionary<NSString*, id>*)fullState {
-  [super setFullState:fullState];
   NSString* text = [fullState[kStateKey] isKindOfClass:[NSString class]] ? fullState[kStateKey] : nil;
+  // The base class sets every parameter of the tree again; with the shell's
+  // state the values follow below, so that the preset applies once and an
+  // untouched control stays untouched.
+  _echo.store(text != nil);
+  [super setFullState:fullState];
+  _echo.store(false);
   if (text == nil) {
     logInfo("The host restores a state without the shell's");
     return;
@@ -620,7 +635,8 @@ void sendMidi(const RenderState& state, const EditorMidi& midi,
   return ^AUAudioUnitStatus(AudioUnitRenderActionFlags* actionFlags, const AudioTimeStamp* timestamp,
                             AUAudioFrameCount frames, NSInteger outputBusNumber,
                             AudioBufferList* output, const AURenderEvent* realtimeEventListHead,
-                            AURenderPullInputBlock pullInputBlock) AUD_PLUGIN_NONBLOCKING {
+                            __unsafe_unretained AURenderPullInputBlock pullInputBlock)
+                            AUD_PLUGIN_NONBLOCKING {
     (void)actionFlags;
     (void)outputBusNumber;
     (void)pullInputBlock;

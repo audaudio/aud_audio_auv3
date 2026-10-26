@@ -12,6 +12,7 @@
 - Send the editor's notes to the host's MIDI output
 - Describe the MIDI output and live play in the README
 - Refer to the AUv3's ticket by its number 64
+- Keep restored controls untouched and send the preset ids
 
 ## 0.1.1 - 2026-10-24
 
