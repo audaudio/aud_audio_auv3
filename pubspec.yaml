@@ -33,6 +33,6 @@ dependencies:
 dev_dependencies:
   dna_audanika: ^0.0.2
   flutter_lints: ^6.0.0
-  helix: ^1.13.0
+  helix: ^1.14.0
   # Within the test_api that flutter_test of the example pins.
   test: ^1.31.1
