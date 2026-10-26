@@ -8,7 +8,7 @@
 PRODUCT_NAME = aud_audio_auv3_example
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.audanika.audAudioAuv3
+PRODUCT_BUNDLE_IDENTIFIER = io.audaudio.auv3.example
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 com.audanika. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 audaudio. All rights reserved.

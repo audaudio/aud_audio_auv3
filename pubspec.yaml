@@ -1,6 +1,6 @@
 name: aud_audio_auv3
 description: "Audio Unit v3 extension of the Audanika Audio Engine over its headless host"
-version: 0.1.1
+version: 0.2.0
 publish_to: none
 homepage: https://github.com/audaudio/aud_audio_auv3
 repository: https://github.com/audaudio/aud_audio_auv3
@@ -14,6 +14,12 @@ workspace:
   - example
 
 dependencies:
+  ffi: ^2.2.0
+  aud_audio_plugin:
+    git:
+      url: git@github.com:audaudio/aud_audio_plugin.git
+      tag_pattern: "{{version}}"
+    version: ^0.1.0
   aud_audio_core:
     git:
       url: git@github.com:audaudio/aud_audio_core.git

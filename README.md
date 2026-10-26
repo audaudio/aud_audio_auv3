@@ -1,48 +1,54 @@
 # aud_audio_auv3
 
-Audio Unit v3 extension of the Audanika Audio Engine over its headless host.
+Audio Unit v3 shell of the Audanika Audio Engine over its headless host.
 
 Part of the Audanika Audio Engine; planned in [aud_audio_pm](https://github.com/audaudio/aud_audio_pm).
 
-## What the package holds (0.1.0, ticket 24)
+## What the package holds (ticket 64)
 
-The iOS part of the spike S0-plugin-ui: an AUv3 extension with a Flutter
-editor. Decision plugin-003 rests on its measurements; the shell itself is
-step S20.
+The AUv3 shell (step S20) on macOS and iOS: an app configures it with a
+`plugin.json`, a graph document and its presets and gets an Audio Unit
+extension with the app's sound and the app's own Flutter UI as its editor
+([doc/plugin-bundle.md](doc/plugin-bundle.md)).
 
-- The engine (`src/aud_auv3_engine.h`): a C API over the headless host of
-  `aud_audio_graph` that renders the spike's graph document, with stable
-  parameter ids and a meter. `scripts/build-engine.js` builds it as a
-  static library for `iphoneos` and `iphonesimulator` into `build/ios`.
-- `AudAuv3Component` (`lib/`): the component description, the channel
-  names and the parameter ids that the extension, its editor and the
-  container app share. `audParamId(nodeId, paramId)` computes a
-  parameter's id as `aud_host_param_id` of `aud_audio_graph` does.
-- The example (`example/`): the container app and the extension
-  `AudSpikeAU`.
-  - The extension: an `AUAudioUnit` with a parameter tree and a render
-    block over the engine, and a ballast of 100 MB that stands in for the
-    sampler. Its `AUViewController` shows a Flutter editor whose engines
-    come from one `FlutterEngineGroup` and start when the view first
-    appears; the knobs write the parameter tree.
-  - The app loads one to four instances out of process, opens their
-    editors and reports the extension's `phys_footprint` and the editors'
-    first frames, once a second, on the screen and on stderr.
+- **The unit** (`src/aud_auv3_audio_unit.h`): an `AUAudioUnit` over the
+  engine of `aud_audio_plugin` - parameters, factory presets, `fullState`
+  with the editor's settings, whose change notifies the host, the host's
+  MIDI and transport, offline rendering, the editor's notes as the MIDI
+  output "MIDI Out", and a render meter in the system log every 2 s.
+- **The editor** (`src/aud_auv3_view_controller.mm`,
+  `src/aud_auv3_editor_bridge.h`): Flutter inside the extension, which
+  talks to the unit with `dart:ffi` (`src/aud_auv3_editor_api.h`) in the
+  shell protocol of `aud_audio_plugin`.
+- **The build** (`scripts/build-plugin.js`): a static library per platform
+  (macOS arm64, iOS, the simulator), the extension's `Info.plist` and an
+  xcconfig for an app's extension target, which holds no code of its own.
+- **Dart** (`lib/`): `AudAuv3Shell`, the editor's end of the protocol.
+- **The example** (`example/`): the unit "Aud Example" of the graph's own
+  nodes, its container app for macOS and iOS and an editor with its
+  presets and four keys.
 
-## Build and run
+## Build and test
 
 ```bash
-node scripts/build-engine.js
-cd example
-flutter build ios --release
-xcrun devicectl device install app --device <id> build/ios/iphoneos/Runner.app
-xcrun devicectl device process launch --device <id> --console \
-  com.audanika.audAudioAuv3 -- --instances 2 --duration 600
+dart pub get
+node scripts/test-native.js
+dart test
+node scripts/host.js --sign "<identity>" --validate
 ```
 
-The app's App ID needs the Inter-App Audio capability: without it, iOS
-refuses to load the extension out of process
-(`kAudioComponentErr_NotPermitted`).
+`test-native.js` runs the native unit tests of `test/native`. `host.js`
+builds the example's container app with its extension for macOS, registers
+it and runs the test host `test/host/aud_auv3_host.swift`, which loads the
+unit out of process as Logic Pro does: presets, rendering, state, two
+instances, realtime blocks, the MIDI output and the editor; `--validate`
+runs `auval` too, `--play <seconds>` plays live in the realtime mode.
+
+On iOS: `node scripts/build-plugin.js --config example/plugin/plugin.json
+--platform ios`, then build and install `example/ios` with Xcode under
+your own team - the project names none, e.g. `xcodebuild …
+DEVELOPMENT_TEAM=<team>`; its App ID needs the Inter-App Audio
+capability.
 
 Flutter (BSD-3-Clause) travels in the extension; `flutter build` writes its
 notices and those of every Dart package into

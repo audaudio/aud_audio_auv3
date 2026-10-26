@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.2.0 - 2026-10-26
+
+### Added
+
+- Add the AUv3 shell for macOS and iOS on aud_audio_plugin
+
+### Changed
+
+- Notify state observers of the editor's settings
+- Send the editor's notes to the host's MIDI output
+- Describe the MIDI output and live play in the README
+- Refer to the AUv3's ticket by its number 64
+- Keep restored controls untouched and send the preset ids
+- Give the example identifiers of its own
+
 ## 0.1.1 - 2026-10-24
 
 ### Changed

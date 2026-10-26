@@ -41,12 +41,6 @@ dependencies:
     # the parent directory to use the current plugin's version.
     path: ../
 
-  aud_audio_ui_controls:
-    git:
-      url: git@github.com:audaudio/aud_audio_ui_controls.git
-      tag_pattern: "{{version}}"
-    version: ^0.1.1
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
