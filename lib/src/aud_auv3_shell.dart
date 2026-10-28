@@ -13,10 +13,14 @@ import 'package:ffi/ffi.dart';
 
 // .............................................................................
 typedef _ReceiverNative = Void Function(Pointer<Utf8>);
-typedef _ConnectNative =
-    Int32 Function(Int64, Pointer<NativeFunction<_ReceiverNative>>);
-typedef _ConnectDart =
-    int Function(int, Pointer<NativeFunction<_ReceiverNative>>);
+typedef _ConnectNative = Int32 Function(
+  Int64,
+  Pointer<NativeFunction<_ReceiverNative>>,
+);
+typedef _ConnectDart = int Function(
+  int,
+  Pointer<NativeFunction<_ReceiverNative>>,
+);
 typedef _SendNative = Int32 Function(Int64, Pointer<Utf8>);
 typedef _SendDart = int Function(int, Pointer<Utf8>);
 typedef _DisconnectNative = Void Function(Int64);
