@@ -18,7 +18,7 @@ section:
   "name": "Aud Example",               // the unit's name in a host
   "vendor": "audaudio",                // shown as "<vendor>: <name>"
   "version": "0.2.0",                  // the AudioComponents version
-  "bundleId": "io.audaudio.auv3.example", // the subsystem of the unit's log
+  "bundleId": "com.example.audAudioAuv3Example", // the subsystem of the unit's log
   "packages": [],
   "document": "document.json",
   "presets": "presets.json",

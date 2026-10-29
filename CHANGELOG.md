@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- Use com.example IDs in the example
+
 ## 0.3.0 - 2026-10-28
 
 ### Changed
@@ -21,6 +27,7 @@
 - Upgrade the dependencies published since the first pass
 
 - Lift the lock file to the newest resolvable versions
+
 
 ## 0.2.1 - 2026-10-26
 
@@ -83,6 +90,7 @@
 - End a run whose instantiation fails; harden build-engine.js
 
 - Test audParamId with fixed vectors and document it in both READMEs
+
 
 ## 0.0.2 - 2026-10-08
 

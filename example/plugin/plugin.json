@@ -3,7 +3,7 @@
   "name": "Aud Example",
   "vendor": "audaudio",
   "version": "0.2.0",
-  "bundleId": "io.audaudio.auv3.example",
+  "bundleId": "com.example.audAudioAuv3Example",
   "packages": [],
   "document": "document.json",
   "presets": "presets.json",
