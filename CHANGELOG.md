@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- Require Flutter 3.50 and Dart 3.14, build the DNA
+
 ## 0.3.1 - 2026-10-29
 
 ### Added
@@ -31,6 +37,7 @@
 - Upgrade the dependencies published since the first pass
 
 - Lift the lock file to the newest resolvable versions
+
 
 ## 0.2.1 - 2026-10-26
 
@@ -93,6 +100,7 @@
 - End a run whose instantiation fails; harden build-engine.js
 
 - Test audParamId with fixed vectors and document it in both READMEs
+
 
 ## 0.0.2 - 2026-10-08
 
